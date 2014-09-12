@@ -102,7 +102,7 @@ public class BangBangController implements UltrasonicController{
 	}
 	
 	/**
-     * prints to LCD the current speeds of both motors
+     * prints to usb console the current speeds of both motors
      */
 	public void printMotorDistances() {
 		RConsole.println("Distance: " + String.valueOf(this.distance) +

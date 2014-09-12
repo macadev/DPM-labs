@@ -10,7 +10,15 @@ public class PController implements UltrasonicController {
 	private int distance;
 	private int filterControl;
     private static float PROPORTIONAL_CONSTANT = (float) 2;
-	
+
+    /**
+     * Default constructor
+     *
+     * Initialises the member variables and starts the motor at a desired speed going forward
+     * @param bandCenter desired distance from the wall
+     * @param bandwith allowed buffer region
+     * @param motorStraight normal cruisong speed
+     */
 	public PController(int bandCenter, int bandwith, int motorStraight) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
@@ -23,7 +31,14 @@ public class PController implements UltrasonicController {
 		rightMotor.forward();
 		filterControl = 0;
 	}
-	
+
+    /**
+     * Proportional controller implementation
+     *
+     * speeds up and down wheels proportionnaly to the distance to the wall
+     *
+     * @param distance distance to the wall
+     */
 	@Override
 	public void processUSData(int distance) {
 		
@@ -40,7 +55,6 @@ public class PController implements UltrasonicController {
 			this.distance = distance;
 		}
 		
-		// TODO: process a movement based on the us distance passed in (P style)
 		if (this.distance < (this.bandCenter - this.bandwith)) {
 			//Too close to the wall, speed up inside wheel
             float differential = recalculateSpeed();
@@ -60,7 +74,9 @@ public class PController implements UltrasonicController {
 	
 	/**
      * sets right motor to higher speed proportional to error,
-     * sets left motor to lower speed proportional to error.
+     * sets left motor to normal speed to increase turning radius
+     * allow for full 180 turns more easilly
+     *
      */
 	public void rightMotorFaster( float differential ) {
 		this.rightMotor.setSpeed(differential + motorStraight);
@@ -97,7 +113,7 @@ public class PController implements UltrasonicController {
 	}
 	
 	/**
-     * prints to LCD the current speeds of both motors
+     * prints to usb console the current speeds of both motors
      */
 	public void printMotorDistances() {
 		RConsole.println("Distance: " + String.valueOf(this.distance) + 
