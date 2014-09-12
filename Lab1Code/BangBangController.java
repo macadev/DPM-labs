@@ -2,10 +2,15 @@ import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
+/**
+ * Bang-Bang controller implementation
+ *
+ * Closed-loop controller the the wall follower robot.
+ */
 public class BangBangController implements UltrasonicController{
 	private final int bandCenter, bandwith;
 
-    private final int motorLow, motorHigh, motorStraight;
+    private final int motorHigh, motorStraight;
 
     private static final int TURNLEFT = 1;
 	private static final int TURNRIGHT = 0;
@@ -15,11 +20,19 @@ public class BangBangController implements UltrasonicController{
 	private int distance;
 	private int previousDistance = 20;
 
-	public BangBangController(int bandCenter, int bandwith, int motorLow, int motorHigh, int motorStraight) {
+    /**
+     * Default constructor
+     *
+     * Initialises the member variables and starts the motor at a desired speed going forward
+     * @param bandCenter desired distance from the wall
+     * @param bandwith allowed region around the bandCenter
+     * @param motorHigh fastest speed for the motors
+     * @param motorStraight normal cruising speed
+     */
+	public BangBangController(int bandCenter, int bandwith, int motorHigh, int motorStraight) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
-		this.motorLow = motorLow;
 		this.motorHigh = motorHigh;
         this.motorStraight = motorStraight;
 		leftMotor.setSpeed(motorStraight);
@@ -27,22 +40,19 @@ public class BangBangController implements UltrasonicController{
 		leftMotor.forward();
 		rightMotor.forward();
 	}
-	
+
+    /**
+     * Bang-bang implementation
+     *
+     * Speeds up outside wheel if distance is too great
+     * Speeds up inside wheel if distance is too little
+     *
+     * @param distance distance away from the wall
+     */
 	@Override
 	public void processUSData(int distance) {
 		this.distance = distance;
         int distanceThreshold = 20;
-		// TODO: process a movement based on the us distance passed in (BANG-BANG style)
-		
-		//if previous measurement is much smaller than the current one, run corner protocol
-		/*
-		if (Math.abs(distance - this.previousDistance) > distanceThreshold) {
-			RConsole.println("gap");
-			openCornerTurn();
-			this.distance = this.previousDistance;
-		}
-		*/
-		
 		//save previous distance - used to detect corners
 		this.previousDistance = distance;
         if (this.distance < (this.bandCenter - this.bandwith)){
@@ -55,42 +65,31 @@ public class BangBangController implements UltrasonicController{
 			// Robot is within bandwith
 			bothStraight();
         }
-        RConsole.println("Distance: "+String.valueOf(this.distance)+'\n'+"Speed: L->"+String.valueOf(leftMotor.getSpeed())+
-                " R->"+String.valueOf(rightMotor.getSpeed()));
+        RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
+                " R->" + String.valueOf(rightMotor.getSpeed()));
 	}
 
-	
-	public void openCornerTurn() {
-		bothStraight();
-		leftMotor.rotate(800, true);
-		rightMotor.rotate(800);
-		ninetyDegreeTurn(TURNLEFT);
-		leftMotor.rotate(800, true);
-		rightMotor.rotate(800);
-	}
-	
-	public void ninetyDegreeTurn(int turnDirection) {
-		if (turnDirection == 0){
-			leftMotor.rotate(320, true);
-			rightMotor.rotate(-320);
-		} else {
-			leftMotor.rotate(-320, true);
-			rightMotor.rotate(320);
-		}
-	}
-	
+    /**
+     * sets both motors to the same speed
+     */
 	public void bothStraight() {
 		rightMotor.setSpeed(this.motorStraight);
 		leftMotor.setSpeed(this.motorStraight);
 	}
-	
+
+    /**
+     * sets right motor to high speed, left to normal
+     */
 	public void rightFaster() {
-		leftMotor.setSpeed(this.motorStraight);
+		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(this.motorHigh);
 	}
-	
+
+    /**
+     * sets left motor to high speed, right to normal
+     */
 	public void leftFaster() {
-		rightMotor.setSpeed(this.motorStraight);
+		rightMotor.setSpeed(0);
 		leftMotor.setSpeed(this.motorHigh);
 	}
 

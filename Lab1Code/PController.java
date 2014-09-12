@@ -1,24 +1,26 @@
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
+import lejos.nxt.comm.RConsole;
 
 public class PController implements UltrasonicController {
 	
 	private final int bandCenter, bandwith;
-	private final int motorStraight = 200, FILTER_OUT = 20;
+	private final int motorStraight, motorHigh, FILTER_OUT = 20;
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.C;	
 	private int distance;
-	private int currentLeftSpeed;
 	private int filterControl;
+    private static int PROPORTIONAL_CONSTANT = 2;
 	
-	public PController(int bandCenter, int bandwith) {
+	public PController(int bandCenter, int bandwith,int motorStraight, int motorHigh) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
+        this.motorStraight = motorStraight;
+        this.motorHigh = motorHigh;
 		leftMotor.setSpeed(motorStraight);
 		rightMotor.setSpeed(motorStraight);
 		leftMotor.forward();
 		rightMotor.forward();
-		currentLeftSpeed = 0;
 		filterControl = 0;
 	}
 	
@@ -42,13 +44,13 @@ public class PController implements UltrasonicController {
 			//Too close to the wall, speed up inside wheel
 			int error = this.bandCenter - this.distance;
 			float ratio = error/(float)this.bandCenter;
-			leftMotor.setSpeed(ratio*motorStraight+motorStraight);
+			leftMotor.setSpeed(Math.min(ratio*motorStraight*PROPORTIONAL_CONSTANT, this.motorHigh)+motorStraight);
 			rightMotor.setSpeed(motorStraight);
 		} else if (this.distance > (this.bandCenter+this.bandwith)) {
 			//Too far from the wall, speed up outside wheel
 			int error = this.distance - this.bandCenter;
 			float ratio = error/(float)this.bandCenter;
-			rightMotor.setSpeed(ratio*motorStraight+motorStraight);
+			rightMotor.setSpeed(Math.min(ratio*motorStraight*PROPORTIONAL_CONSTANT, this.motorHigh)+motorStraight);
 			leftMotor.setSpeed(motorStraight);
 				
 		} else {
@@ -56,7 +58,10 @@ public class PController implements UltrasonicController {
 			rightMotor.setSpeed(motorStraight);
 			leftMotor.setSpeed(motorStraight);
 		}
-	}
+        RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
+                " R->" + String.valueOf(rightMotor.getSpeed()));
+
+    }
 
 	
 	@Override

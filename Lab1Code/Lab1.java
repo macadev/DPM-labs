@@ -7,7 +7,7 @@ public class Lab1 {
 	private static final SensorPort usPort = SensorPort.S1;
 	//private static final SensorPort lightPort = SensorPort.S2;
 	
-	private static final int desiredCenter = 20, bandWidth = 3;
+	private static final int desiredCenter = 30, bandWidth = 3;
 	private static final int motorLow = 100, motorHigh = 400, motorStraigth = 200;
 	
 	
@@ -17,7 +17,7 @@ public class Lab1 {
 		 * Button.ID_LEFT = BangBang Type
 		 * Button.ID_RIGHT = P Type
 		 */
-        RConsole.openUSB(5000);
+        RConsole.openUSB(3000);
         RConsole.println("Connected");
 		int option = 0;
 		Printer.printMainMenu();
@@ -25,8 +25,8 @@ public class Lab1 {
 			option = Button.waitForAnyPress();
 		
 		// Setup controller objects
-		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorLow, motorHigh, motorStraigth);
-		PController p = new PController(desiredCenter, bandWidth);
+		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorHigh, motorStraigth);
+		PController p = new PController(desiredCenter, bandWidth, motorStraigth, motorHigh);
 		
 		// Setup ultrasonic sensor
 		UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
