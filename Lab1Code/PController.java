@@ -5,19 +5,18 @@ import lejos.robotics.navigation.DifferentialPilot;
 public class PController implements UltrasonicController {
 	
 	private final int bandCenter, bandwith;
-	private final int motorStraight, motorHigh, FILTER_OUT = 10;
+	private final int motorStraight, FILTER_OUT = 20;
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.C;	
 	private int distance;
 	private int filterControl;
-    private static float PROPORTIONAL_CONSTANT = (float) 2.5;
+    private static float PROPORTIONAL_CONSTANT = (float) 2;
 	
-	public PController(int bandCenter, int bandwith,int motorStraight, int motorHigh) {
+	public PController(int bandCenter, int bandwith, int motorStraight) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
         this.motorStraight = motorStraight;
-        this.motorHigh = motorHigh;
-        
+
 		leftMotor.setSpeed(motorStraight);
 		rightMotor.setSpeed(motorStraight);
 		leftMotor.forward();
@@ -29,10 +28,10 @@ public class PController implements UltrasonicController {
 	public void processUSData(int distance) {
 		
 		// rudimentary filter
-		if (distance > 150 && filterControl < FILTER_OUT) {
+		if (distance > 255 && filterControl < FILTER_OUT) {
 			// Record that a bad value was detected. Record it and keep executing
 			filterControl ++;
-		} else if (distance > 150){
+		} else if (distance > 255){
 			// true 255, therefore set distance to 255
 			this.distance = distance;
 		} else {
@@ -65,12 +64,7 @@ public class PController implements UltrasonicController {
      */
 	public void rightMotorFaster( float differential ) {
 		this.rightMotor.setSpeed(differential + motorStraight);
-		
-		if (this.leftMotor.getSpeed() - differential <= 0) {
-			return;
-		} else {
-			this.leftMotor.setSpeed(motorStraight - differential);
-		}
+        this.leftMotor.setSpeed(motorStraight);
 	}
 	
 	/**
@@ -79,12 +73,8 @@ public class PController implements UltrasonicController {
      */
 	public void leftMotorFaster( float differential ) {
 		this.leftMotor.setSpeed(differential + motorStraight);
-		
-		if (this.rightMotor.getSpeed() - differential <= 0) {
-			return;
-		} else {
-			this.rightMotor.setSpeed(motorStraight - differential);
-		}
+        //make sure speed is at least 1
+        this.rightMotor.setSpeed(Math.max(1 , motorStraight - differential));
 	}
 	
 	/**
@@ -103,8 +93,7 @@ public class PController implements UltrasonicController {
 	public float recalculateSpeed() {
 		int error = Math.abs(this.bandCenter - this.distance);
 		float ratio = error / (float) this.bandCenter;
-		float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
-		return differential;
+        return Math.min(ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorStraight);
 	}
 	
 	/**

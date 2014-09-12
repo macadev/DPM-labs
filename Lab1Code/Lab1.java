@@ -26,7 +26,7 @@ public class Lab1 {
 		
 		// Setup controller objects
 		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorHigh, motorStraigth);
-		PController p = new PController(desiredCenter, bandWidth, motorStraigth, motorHigh);
+		PController p = new PController(desiredCenter, bandWidth, motorStraigth);
 		
 		// Setup ultrasonic sensor
 		UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
