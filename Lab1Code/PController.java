@@ -28,10 +28,10 @@ public class PController implements UltrasonicController {
 	public void processUSData(int distance) {
 		
 		// rudimentary filter
-		if (distance == 255 && filterControl < FILTER_OUT) {
+		if (distance > 150 && filterControl < FILTER_OUT) {
 			// bad value, do not set the distance var, however do increment the filter value
 			filterControl ++;
-		} else if (distance == 255){
+		} else if (distance > 150){
 			// true 255, therefore set distance to 255
 			this.distance = distance;
 		} else {
@@ -40,31 +40,50 @@ public class PController implements UltrasonicController {
 			this.distance = distance;
 		}
 		// TODO: process a movement based on the us distance passed in (P style)
-		if (this.distance < (this.bandCenter-this.bandwith)){
+		if (this.distance < (this.bandCenter - this.bandwith)) {
 			//Too close to the wall, speed up inside wheel
-			int error = this.bandCenter - this.distance;
-			float ratio = error/(float)this.bandCenter;
-            float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
-			leftMotor.setSpeed( differential + motorStraight);
-			rightMotor.setSpeed(motorStraight - differential);
-		} else if (this.distance > (this.bandCenter+this.bandwith)) {
+            float differential = recalculateSpeed();
+            leftMotorFaster(differential);
+		} else if (this.distance > (this.bandCenter + this.bandwith)) {
 			//Too far from the wall, speed up outside wheel
-			int error = this.distance - this.bandCenter;
-			float ratio = error/(float)this.bandCenter;
-            float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
-            rightMotor.setSpeed(differential + motorStraight);
-			leftMotor.setSpeed(motorStraight - differential);
-				
+            float differential = recalculateSpeed();
+            rightMotorFaster(differential);	
 		} else {
 			// we assume that the value is in the center band as it is not above or below
-			rightMotor.setSpeed(motorStraight);
-			leftMotor.setSpeed(motorStraight);
+			bothMotorsStraight();
 		}
-        RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
-                " R->" + String.valueOf(rightMotor.getSpeed()));
+        
+		printMotorDistances();
 
     }
-
+	
+	public void rightMotorFaster( float differential ) {
+		this.rightMotor.setSpeed(differential + motorStraight);
+		this.leftMotor.setSpeed(motorStraight - differential);
+		
+	}
+	
+	public void leftMotorFaster( float differential ) {
+		this.rightMotor.setSpeed(motorStraight - differential);
+		this.leftMotor.setSpeed(differential + motorStraight);
+	}
+	
+	public void bothMotorsStraight() {
+		rightMotor.setSpeed(this.motorStraight);
+		leftMotor.setSpeed(this.motorStraight);
+	}
+	
+	public float recalculateSpeed() {
+		int error = Math.abs(this.bandCenter - this.distance);
+		float ratio = error / (float) this.bandCenter;
+		float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
+		return differential;
+	}
+	
+	public void printMotorDistances() {
+		RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
+                " R->" + String.valueOf(rightMotor.getSpeed()));
+	}
 	
 	@Override
 	public int readUSDistance() {

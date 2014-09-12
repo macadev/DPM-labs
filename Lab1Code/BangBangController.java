@@ -1,4 +1,3 @@
-import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
@@ -79,16 +78,16 @@ public class BangBangController implements UltrasonicController{
 			rightFaster();
         } else {
 			// Robot is within bandwith
-			bothStraight();
+			bothMotorsStraight();
         }
-        RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
-                " R->" + String.valueOf(rightMotor.getSpeed()));
+        
+        printMotorDistances();
 	}
 
     /**
      * sets both motors to the same speed
      */
-	public void bothStraight() {
+	public void bothMotorsStraight() {
 		rightMotor.setSpeed(this.motorStraight);
 		leftMotor.setSpeed(this.motorStraight);
 	}
@@ -107,6 +106,11 @@ public class BangBangController implements UltrasonicController{
 	public void leftFaster() {
 		rightMotor.setSpeed(100);
 		leftMotor.setSpeed(this.motorHigh);
+	}
+	
+	public void printMotorDistances() {
+		RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
+                " R->" + String.valueOf(rightMotor.getSpeed()));
 	}
 
 	@Override
