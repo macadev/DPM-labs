@@ -1,4 +1,20 @@
+# Compiled # 
+############
 *.class
 *.nxj
-.idea/
+
+# Project #
+###########
+.classpath
+.externalToolBuilders
+.idea
+.project
+*.cproject
+.settings
+nbproject
+atlassian-ide-plugin.xml
+build.xml
+nb-configuration.xml
 *.iml
+*.ipr
+*.iws
