@@ -10,6 +10,9 @@ import lejos.nxt.comm.RConsole;
 public class BangBangController implements UltrasonicController{
 	private final int bandCenter, bandwith;
 
+    private final int FILTER_OUT = 10;
+    private int filterControl;
+
     private final int motorHigh, motorStraight;
 
     private static final int TURNLEFT = 1;
@@ -39,7 +42,8 @@ public class BangBangController implements UltrasonicController{
 		rightMotor.setSpeed(motorStraight);
 		leftMotor.forward();
 		rightMotor.forward();
-	}
+        filterControl = 0;
+    }
 
     /**
      * Bang-bang implementation
@@ -51,7 +55,19 @@ public class BangBangController implements UltrasonicController{
      */
 	@Override
 	public void processUSData(int distance) {
-		this.distance = distance;
+        // rudimentary filter
+        if (distance == 255 && filterControl < FILTER_OUT) {
+            // bad value, do not set the distance var, however do increment the filter value
+            filterControl ++;
+        } else if (distance == 255){
+            // true 255, therefore set distance to 255
+            this.distance = distance;
+        } else {
+            // distance went below 255, therefore reset everything.
+            filterControl = 0;
+            this.distance = distance;
+        }
+
         int distanceThreshold = 20;
 		//save previous distance - used to detect corners
 		this.previousDistance = distance;
@@ -81,7 +97,7 @@ public class BangBangController implements UltrasonicController{
      * sets right motor to high speed, left to normal
      */
 	public void rightFaster() {
-		leftMotor.setSpeed(0);
+		leftMotor.setSpeed(100);
 		rightMotor.setSpeed(this.motorHigh);
 	}
 
@@ -89,7 +105,7 @@ public class BangBangController implements UltrasonicController{
      * sets left motor to high speed, right to normal
      */
 	public void leftFaster() {
-		rightMotor.setSpeed(0);
+		rightMotor.setSpeed(100);
 		leftMotor.setSpeed(this.motorHigh);
 	}
 

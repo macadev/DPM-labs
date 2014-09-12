@@ -44,14 +44,16 @@ public class PController implements UltrasonicController {
 			//Too close to the wall, speed up inside wheel
 			int error = this.bandCenter - this.distance;
 			float ratio = error/(float)this.bandCenter;
-			leftMotor.setSpeed(Math.min(ratio*motorStraight*PROPORTIONAL_CONSTANT, this.motorHigh)+motorStraight);
-			rightMotor.setSpeed(motorStraight);
+            float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
+			leftMotor.setSpeed( differential + motorStraight);
+			rightMotor.setSpeed(motorStraight - differential);
 		} else if (this.distance > (this.bandCenter+this.bandwith)) {
 			//Too far from the wall, speed up outside wheel
 			int error = this.distance - this.bandCenter;
 			float ratio = error/(float)this.bandCenter;
-			rightMotor.setSpeed(Math.min(ratio*motorStraight*PROPORTIONAL_CONSTANT, this.motorHigh)+motorStraight);
-			leftMotor.setSpeed(motorStraight);
+            float differential = Math.min( ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorHigh);
+            rightMotor.setSpeed(differential + motorStraight);
+			leftMotor.setSpeed(motorStraight - differential);
 				
 		} else {
 			// we assume that the value is in the center band as it is not above or below
