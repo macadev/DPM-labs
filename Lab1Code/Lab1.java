@@ -1,5 +1,11 @@
 import lejos.nxt.*;
+import lejos.nxt.comm.NXTConnection;
 import lejos.nxt.comm.RConsole;
+import lejos.nxt.comm.USB;
+import lejos.util.LogColumn;
+import lejos.util.NXTDataLogger;
+
+import java.io.IOException;
 
 
 public class Lab1 {
@@ -19,13 +25,29 @@ public class Lab1 {
 		 */
         RConsole.openUSB(5000);
         RConsole.println("Connected");
-		int option = 0;
+
+        NXTDataLogger dlog = new NXTDataLogger();
+        NXTConnection conn = USB.waitForConnection(5000, NXTConnection.PACKET);
+
+        try {
+            dlog.startRealtimeLog(conn);
+        } catch (IOException e) {
+            // Do nothing. This is hideously bad.
+        }
+
+        dlog.setColumns(new LogColumn[] {
+                new LogColumn("speed left", LogColumn.DT_INTEGER),
+                new LogColumn("speed right", LogColumn.DT_INTEGER),
+                new LogColumn("Distance", LogColumn.DT_INTEGER,3),// use different range axis (3)
+        });
+
+        int option = 0;
 		Printer.printMainMenu();
 		while (option == 0)
 			option = Button.waitForAnyPress();
 		
 		// Setup controller objects
-		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorLow, motorHigh);
+		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorLow, motorHigh, dlog);
 		PController p = new PController(desiredCenter, bandWidth);
 		
 		// Setup ultrasonic sensor

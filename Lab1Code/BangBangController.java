@@ -1,6 +1,7 @@
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
+import lejos.util.NXTDataLogger;
 
 public class BangBangController implements UltrasonicController{
 	private final int bandCenter, bandwith;
@@ -9,11 +10,13 @@ public class BangBangController implements UltrasonicController{
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.C;
 	private int distance;
 	private int currentLeftSpeed;
+    private NXTDataLogger dlog;
 	
-	public BangBangController(int bandCenter, int bandwith, int motorLow, int motorHigh) {
+	public BangBangController(int bandCenter, int bandwith, int motorLow, int motorHigh, NXTDataLogger dlog) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
+        this.dlog = dlog;
 		//this.motorLow = motorLow;
 		//this.motorHigh = motorHigh;
 		leftMotor.setSpeed(motorStraight);
@@ -41,8 +44,11 @@ public class BangBangController implements UltrasonicController{
 			rightMotor.setSpeed(motorStraight);
 			leftMotor.setSpeed(motorStraight);
         }
-        RConsole.println("Distance: "+String.valueOf(this.distance)+'\n'+"Speed: L->"+String.valueOf(leftMotor.getSpeed())+
-                " R->"+String.valueOf(rightMotor.getSpeed()));
+        dlog.writeLog(leftMotor.getSpeed());
+        dlog.writeLog(rightMotor.getSpeed());
+        dlog.writeLog(this.distance);
+        //RConsole.println("Distance: "+String.valueOf(this.distance)+'\n'+"Speed: L->"+String.valueOf(leftMotor.getSpeed())+
+        //        " R->"+String.valueOf(rightMotor.getSpeed()));
 	}
 
 	@Override
