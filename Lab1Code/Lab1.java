@@ -8,7 +8,7 @@ public class Lab1 {
 	//private static final SensorPort lightPort = SensorPort.S2;
 	
 	private static final int desiredCenter = 20, bandWidth = 3;
-	private static final int motorLow = 100, motorHigh = 400;
+	private static final int motorLow = 100, motorHigh = 400, motorStraigth = 200;
 	
 	
 	public static void main(String [] args) {
@@ -25,7 +25,7 @@ public class Lab1 {
 			option = Button.waitForAnyPress();
 		
 		// Setup controller objects
-		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorLow, motorHigh);
+		BangBangController bangbang = new BangBangController(desiredCenter, bandWidth, motorLow, motorHigh, motorStraigth);
 		PController p = new PController(desiredCenter, bandWidth);
 		
 		// Setup ultrasonic sensor

@@ -4,38 +4,39 @@ import lejos.nxt.comm.RConsole;
 
 public class BangBangController implements UltrasonicController{
 	private final int bandCenter, bandwith;
-	private final int motorLow = 50, motorHigh = 400;
-	private final int motorStraight = 200;
-	private final int TURNLEFT = 1;
-	private final int TURNRIGHT = 0;
+
+    private final int motorLow, motorHigh, motorStraight;
+
+    private static final int TURNLEFT = 1;
+	private static final int TURNRIGHT = 0;
 	
 	
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.C;
 	private int distance;
 	private int previousDistance = 20;
-	private int currentLeftSpeed;
-	
-	public BangBangController(int bandCenter, int bandwith, int motorLow, int motorHigh) {
+
+	public BangBangController(int bandCenter, int bandwith, int motorLow, int motorHigh, int motorStraight) {
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.bandwith = bandwith;
-		//this.motorLow = motorLow;
-		//this.motorHigh = motorHigh;
+		this.motorLow = motorLow;
+		this.motorHigh = motorHigh;
+        this.motorStraight = motorStraight;
 		leftMotor.setSpeed(motorStraight);
 		rightMotor.setSpeed(motorStraight);
 		leftMotor.forward();
 		rightMotor.forward();
-		currentLeftSpeed = 0;
 	}
 	
 	@Override
 	public void processUSData(int distance) {
 		this.distance = distance;
+        int distanceThreshold = 20;
 		// TODO: process a movement based on the us distance passed in (BANG-BANG style)
 		
 		//if previous measurement is much smaller than the current one, run corner protocol
 		/*
-		if (Math.abs(distance - this.previousDistance) > 20) {
+		if (Math.abs(distance - this.previousDistance) > distanceThreshold) {
 			RConsole.println("gap");
 			openCornerTurn();
 			this.distance = this.previousDistance;
@@ -54,8 +55,8 @@ public class BangBangController implements UltrasonicController{
 			// Robot is within bandwith
 			bothStraight();
         }
-        //RConsole.println("Distance: "+String.valueOf(this.distance)+'\n'+"Speed: L->"+String.valueOf(leftMotor.getSpeed())+
-          //      " R->"+String.valueOf(rightMotor.getSpeed()));
+        RConsole.println("Distance: "+String.valueOf(this.distance)+'\n'+"Speed: L->"+String.valueOf(leftMotor.getSpeed())+
+                " R->"+String.valueOf(rightMotor.getSpeed()));
 	}
 
 	
@@ -63,10 +64,9 @@ public class BangBangController implements UltrasonicController{
 		bothStraight();
 		leftMotor.rotate(800, true);
 		rightMotor.rotate(800);
-		ninetyDegreeTurn(this.TURNLEFT);
+		ninetyDegreeTurn(TURNLEFT);
 		leftMotor.rotate(800, true);
 		rightMotor.rotate(800);
-		return;
 	}
 	
 	public void ninetyDegreeTurn(int turnDirection) {
@@ -80,18 +80,18 @@ public class BangBangController implements UltrasonicController{
 	}
 	
 	public void bothStraight() {
-		rightMotor.setSpeed(motorStraight);
-		leftMotor.setSpeed(motorStraight);
+		rightMotor.setSpeed(this.motorStraight);
+		leftMotor.setSpeed(this.motorStraight);
 	}
 	
 	public void rightFaster() {
-		leftMotor.setSpeed(motorStraight);
-		rightMotor.setSpeed(motorHigh);
+		leftMotor.setSpeed(this.motorStraight);
+		rightMotor.setSpeed(this.motorHigh);
 	}
 	
 	public void leftFaster() {
-		rightMotor.setSpeed(motorStraight);
-		leftMotor.setSpeed(motorHigh);
+		rightMotor.setSpeed(this.motorStraight);
+		leftMotor.setSpeed(this.motorHigh);
 	}
 
 	@Override
