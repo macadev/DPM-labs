@@ -13,14 +13,9 @@ public class BangBangController implements UltrasonicController{
     private int filterControl;
 
     private final int motorHigh, motorStraight;
-
-    private static final int TURNLEFT = 1;
-	private static final int TURNRIGHT = 0;
-	
 	
 	private final NXTRegulatedMotor leftMotor = Motor.A, rightMotor = Motor.C;
 	private int distance;
-	private int previousDistance = 20;
 
     /**
      * Default constructor
@@ -67,9 +62,7 @@ public class BangBangController implements UltrasonicController{
             this.distance = distance;
         }
 
-        int distanceThreshold = 20;
 		//save previous distance - used to detect corners
-		this.previousDistance = distance;
         if (this.distance < (this.bandCenter - this.bandwith)){
 			//Too close to the wall, slow down outside wheel
 			leftFaster();
@@ -108,8 +101,12 @@ public class BangBangController implements UltrasonicController{
 		leftMotor.setSpeed(this.motorHigh);
 	}
 	
+	/**
+     * prints to LCD the current speeds of both motors
+     */
 	public void printMotorDistances() {
-		RConsole.println("Distance: " + String.valueOf(this.distance) + '\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
+		RConsole.println("Distance: " + String.valueOf(this.distance) +
+				'\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
                 " R->" + String.valueOf(rightMotor.getSpeed()));
 	}
 
