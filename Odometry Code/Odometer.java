@@ -10,7 +10,7 @@ public class Odometer extends Thread {
 	private static final long ODOMETER_PERIOD = 25;
 
 	// lock object for mutual exclusion
-	private Object lock;
+	private final Object lock;
 
 	// default constructor
 	public Odometer() {
