@@ -17,9 +17,7 @@ public class Lab1 {
 		 * Button.ID_LEFT = BangBang Type
 		 * Button.ID_RIGHT = P Type
 		 */
-        RConsole.openUSB(3000);
-        RConsole.println("Connected");
-		int option = 0;
+        int option = 0;
 		Printer.printMainMenu();
 		while (option == 0)
 			option = Button.waitForAnyPress();

@@ -73,9 +73,7 @@ public class BangBangController implements UltrasonicController{
 			// Robot is within bandwith
 			bothMotorsStraight();
         }
-        
-        printMotorDistances();
-	}
+    }
 
     /**
      * sets both motors to the same speed
@@ -99,15 +97,6 @@ public class BangBangController implements UltrasonicController{
 	public void leftFaster() {
 		rightMotor.setSpeed(100);
 		leftMotor.setSpeed(this.motorHigh);
-	}
-	
-	/**
-     * prints to usb console the current speeds of both motors
-     */
-	public void printMotorDistances() {
-		RConsole.println("Distance: " + String.valueOf(this.distance) +
-				'\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
-                " R->" + String.valueOf(rightMotor.getSpeed()));
 	}
 
 	@Override

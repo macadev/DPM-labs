@@ -68,7 +68,6 @@ public class PController implements UltrasonicController {
 			bothMotorsStraight();
 		}
         
-		printMotorDistances();
 
     }
 	
@@ -110,15 +109,6 @@ public class PController implements UltrasonicController {
 		int error = Math.abs(this.bandCenter - this.distance);
 		float ratio = error / (float) this.bandCenter;
         return Math.min(ratio * motorStraight * PROPORTIONAL_CONSTANT, this.motorStraight);
-	}
-	
-	/**
-     * prints to usb console the current speeds of both motors
-     */
-	public void printMotorDistances() {
-		RConsole.println("Distance: " + String.valueOf(this.distance) + 
-				'\n' + "Speed: L->" + String.valueOf(leftMotor.getSpeed()) +
-                " R->" + String.valueOf(rightMotor.getSpeed()));
 	}
 	
 	@Override
