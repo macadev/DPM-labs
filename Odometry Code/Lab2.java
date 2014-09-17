@@ -5,13 +5,15 @@ import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
 public class Lab2 {
+    private static double WHEEL_RADIUS = 2.6;
+    private static double WHEEL_DISTANCE = 18.6;
 	public static void main(String[] args) {
 		RConsole.openUSB(5000);
         RConsole.println("Connected");
         int buttonChoice;
 
         // some objects that need to be instantiated
-		Odometer odometer = new Odometer();
+		Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
 		//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
 
@@ -49,7 +51,7 @@ public class Lab2 {
 			// spawn a new Thread to avoid SquareDriver.drive() from blocking
 			(new Thread() {
 				public void run() {
-					SquareDriver.drive(Motor.A, Motor.B, 2.8, 2.8, 15.24);
+					SquareDriver.drive(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_RADIUS, WHEEL_DISTANCE);
 				}
 			}).start();
 		}

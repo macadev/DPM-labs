@@ -13,19 +13,21 @@ public class Odometer extends Thread {
     //tacho counts (previous)
     private int prevTachoL, prevTachoR;
 
-    private static int WHEEL_RADIUS = 25; //in mm
-    private static int WHEEL_DISTANCE = 160; //in mm
+    private final double WHEEL_RADIUS ;
+    private final double WHEEL_DISTANCE;
 	// odometer update period, in ms
-	private static final long ODOMETER_PERIOD = 500;
+	private static final long ODOMETER_PERIOD = 100;
 
 	// lock object for mutual exclusion
 	private final Object lock;
 
 	// default constructor
-	public Odometer() {
+	public Odometer(double wheel_radius, double wheel_distance) {
 		x = 0.0;
 		y = 0.0;
 		theta = 0.0;
+        WHEEL_DISTANCE=wheel_distance;
+        WHEEL_RADIUS=wheel_radius;
 		lock = new Object();
         Motor.A.resetTachoCount();
         Motor.B.resetTachoCount();
@@ -58,7 +60,7 @@ public class Odometer extends Thread {
                 prevTachoL += tachoDeltaL;
                 prevTachoR += tachoDeltaR;
 
-                theta += detlaTheta;
+                theta = (theta + detlaTheta) % (2 * Math.PI);
 
                 // /10 to go back to cm
                 x += dCenter/10*Math.sin(theta);
@@ -88,7 +90,7 @@ public class Odometer extends Thread {
 			if (update[1])
 				position[1] = y;
 			if (update[2])
-				position[2] = theta;
+				position[2] = theta*180/Math.PI;
 		}
 	}
 

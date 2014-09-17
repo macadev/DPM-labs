@@ -6,6 +6,7 @@ import lejos.nxt.*;
 public class SquareDriver {
 	private static final int FORWARD_SPEED = 250;
 	private static final int ROTATE_SPEED = 150;
+    private static final int ACCELERATION = 500;
 
 	public static void drive(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor,
 			double leftRadius, double rightRadius, double width) {
@@ -25,6 +26,9 @@ public class SquareDriver {
 
 		for (int i = 0; i < 4; i++) {
 			// drive forward two tiles
+            leftMotor.setAcceleration(ACCELERATION);
+            rightMotor.setAcceleration(ACCELERATION);
+
 			leftMotor.setSpeed(FORWARD_SPEED);
 			rightMotor.setSpeed(FORWARD_SPEED);
 
