@@ -2,12 +2,21 @@
  * Odometer.java
  */
 
+import lejos.nxt.Motor;
+import lejos.nxt.MotorPort;
+import lejos.nxt.comm.RConsole;
+
 public class Odometer extends Thread {
 	// robot position
 	private double x, y, theta;
 
+    //tacho counts (previous)
+    private int prevTachoL, prevTachoR;
+
+    private static int WHEEL_RADIUS = 25; //in mm
+    private static int WHEEL_DISTANCE = 160; //in mm
 	// odometer update period, in ms
-	private static final long ODOMETER_PERIOD = 25;
+	private static final long ODOMETER_PERIOD = 500;
 
 	// lock object for mutual exclusion
 	private final Object lock;
@@ -18,7 +27,11 @@ public class Odometer extends Thread {
 		y = 0.0;
 		theta = 0.0;
 		lock = new Object();
-	}
+        Motor.A.resetTachoCount();
+        Motor.B.resetTachoCount();
+        prevTachoL = 0;
+        prevTachoR = 0;
+    }
 
 	// run method (required for Thread)
 	public void run() {
@@ -27,10 +40,29 @@ public class Odometer extends Thread {
 		while (true) {
 			updateStart = System.currentTimeMillis();
 			// put (some of) your odometer code here
+	        //Get variation tacho
+            int tachoDeltaL = Motor.A.getTachoCount()-prevTachoL;
+            int tachoDeltaR = Motor.B.getTachoCount()-prevTachoR;
+            RConsole.println("Delta left: "+String.valueOf(tachoDeltaL)+"\nDelta right: "+String.valueOf(tachoDeltaR));
 
-			synchronized (lock) {
-				// don't use the variables x, y, or theta anywhere but here!
-				theta = -0.7376;
+            double dLeft = (WHEEL_RADIUS * Math.PI * tachoDeltaL) / 180;
+            double dRright = (WHEEL_RADIUS * Math.PI * tachoDeltaR) / 180;
+            double dCenter = (dLeft+dRright)/2/10;
+
+            RConsole.println("dLeft: "+String.valueOf(dLeft)+"\n"+"dRight: "+String.valueOf(dRright)+"\n"+"Distance travelled: "+String.valueOf(dCenter));
+            double detlaTheta = (dRright-dLeft)/WHEEL_DISTANCE;
+            RConsole.println("Delta theta: "+String.valueOf(detlaTheta));
+
+            synchronized (lock) {
+                //update prev tacho counts
+                prevTachoL += tachoDeltaL;
+                prevTachoR += tachoDeltaR;
+
+                theta += detlaTheta;
+
+                // /10 to go back to cm
+                x += dCenter/10*Math.sin(theta);
+                y += dCenter/10*Math.cos(theta);
 			}
 
 			// this ensures that the odometer only runs once every period

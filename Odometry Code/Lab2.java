@@ -2,15 +2,18 @@
  * Lab2.java
  */
 import lejos.nxt.*;
+import lejos.nxt.comm.RConsole;
 
 public class Lab2 {
 	public static void main(String[] args) {
-		int buttonChoice;
+		RConsole.openUSB(5000);
+        RConsole.println("Connected");
+        int buttonChoice;
 
-		// some objects that need to be instantiated
+        // some objects that need to be instantiated
 		Odometer odometer = new Odometer();
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-		OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
+		//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
 
 		do {
 			// clear the display
@@ -51,13 +54,7 @@ public class Lab2 {
 			}).start();
 		}
 		
-		while (Button.waitForAnyPress() != Button.ID_ESCAPE){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-		System.exit(0);
+		Button.waitForAnyPress();
+        System.exit(0);
 	}
 }
