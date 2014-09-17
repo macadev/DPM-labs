@@ -47,7 +47,7 @@ public class Odometer extends Thread {
 
             double dLeft = (WHEEL_RADIUS * Math.PI * tachoDeltaL) / 180;
             double dRright = (WHEEL_RADIUS * Math.PI * tachoDeltaR) / 180;
-            double dCenter = (dLeft+dRright)/2/10;
+            double dCenter = (dLeft+dRright)/2;
 
             RConsole.println("dLeft: "+String.valueOf(dLeft)+"\n"+"dRight: "+String.valueOf(dRright)+"\n"+"Distance travelled: "+String.valueOf(dCenter));
             double detlaTheta = (dRright-dLeft)/WHEEL_DISTANCE;
