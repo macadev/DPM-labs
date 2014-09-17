@@ -5,10 +5,10 @@ import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
 public class Lab2 {
-    private static double WHEEL_RADIUS = 2.6;
-    private static double WHEEL_DISTANCE = 18.6;
+    private static double WHEEL_RADIUS = 2.1;
+    private static double WHEEL_DISTANCE = 15;
 	public static void main(String[] args) {
-		RConsole.openUSB(5000);
+		//RConsole.openUSB(5000);
         RConsole.println("Connected");
         int buttonChoice;
 
