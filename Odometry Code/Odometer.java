@@ -26,8 +26,8 @@ public class Odometer extends Thread {
 		x = 0.0;
 		y = 0.0;
 		theta = 0.0;
-        WHEEL_DISTANCE=wheel_distance;
-        WHEEL_RADIUS=wheel_radius;
+        WHEEL_DISTANCE = wheel_distance;
+        WHEEL_RADIUS = wheel_radius;
 		lock = new Object();
         Motor.A.resetTachoCount();
         Motor.B.resetTachoCount();
@@ -43,16 +43,16 @@ public class Odometer extends Thread {
 			updateStart = System.currentTimeMillis();
 			// put (some of) your odometer code here
 	        //Get variation tacho
-            int tachoDeltaL = Motor.A.getTachoCount()-prevTachoL;
-            int tachoDeltaR = Motor.B.getTachoCount()-prevTachoR;
+            int tachoDeltaL = Motor.A.getTachoCount() - prevTachoL;
+            int tachoDeltaR = Motor.B.getTachoCount() - prevTachoR;
             RConsole.println("Delta left: "+String.valueOf(tachoDeltaL)+"\nDelta right: "+String.valueOf(tachoDeltaR));
 
             double dLeft = (WHEEL_RADIUS * Math.PI * tachoDeltaL) / 180;
             double dRright = (WHEEL_RADIUS * Math.PI * tachoDeltaR) / 180;
-            double dCenter = (dLeft+dRright)/2;
+            double dCenter = (dLeft + dRright) /2;
 
             RConsole.println("dLeft: "+String.valueOf(dLeft)+"\n"+"dRight: "+String.valueOf(dRright)+"\n"+"Distance travelled: "+String.valueOf(dCenter));
-            double detlaTheta = (dRright-dLeft)/WHEEL_DISTANCE;
+            double detlaTheta = (dRright - dLeft) / WHEEL_DISTANCE;
             RConsole.println("Delta theta: "+String.valueOf(detlaTheta));
 
             synchronized (lock) {
@@ -63,8 +63,8 @@ public class Odometer extends Thread {
                 theta = (theta + detlaTheta) % (2 * Math.PI);
 
                 // /10 to go back to cm
-                x += dCenter/10*Math.sin(theta);
-                y += dCenter/10*Math.cos(theta);
+                x += dCenter / 10*Math.sin(theta);
+                y += dCenter / 10*Math.cos(theta);
 			}
 
 			// this ensures that the odometer only runs once every period
