@@ -62,9 +62,8 @@ public class Odometer extends Thread {
 
                 theta = (theta + detlaTheta) % (2 * Math.PI);
 
-                // /10 to go back to cm
-                x += dCenter / 10*Math.sin(theta);
-                y += dCenter / 10*Math.cos(theta);
+                x += dCenter *Math.sin(theta);
+                y += dCenter *Math.cos(theta);
 			}
 
 			// this ensures that the odometer only runs once every period

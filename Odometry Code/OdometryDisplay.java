@@ -1,15 +1,18 @@
 /*
  * OdometryDisplay.java
  */
+import lejos.nxt.ColorSensor;
 import lejos.nxt.LCD;
 
 public class OdometryDisplay extends Thread {
 	private static final long DISPLAY_PERIOD = 250;
 	private Odometer odometer;
+    private OdometryCorrection odometryCorrection;
 
 	// constructor
-	public OdometryDisplay(Odometer odometer) {
+	public OdometryDisplay(Odometer odometer, OdometryCorrection odometryCorrection) {
 		this.odometer = odometer;
+        this.odometryCorrection = odometryCorrection;
 	}
 
 	// run method (required for Thread)
@@ -27,11 +30,14 @@ public class OdometryDisplay extends Thread {
 			LCD.drawString("X:              ", 0, 0);
 			LCD.drawString("Y:              ", 0, 1);
 			LCD.drawString("T:              ", 0, 2);
+            LCD.drawString("Light:          ", 0, 3);
 
 			// get the odometry information
 			odometer.getPosition(position, new boolean[] { true, true, true });
 
-			// display odometry information
+            LCD.drawString(String.valueOf(odometryCorrection.getLight()), 7, 3);
+
+            // display odometry information
 			for (int i = 0; i < 3; i++) {
 				LCD.drawString(formattedDoubleToString(position[i], 2), 3, i);
 			}
