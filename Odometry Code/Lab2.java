@@ -12,11 +12,11 @@ public class Lab2 {
         RConsole.println("Connected");
         int buttonChoice;
 
-        LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
+        ColorSensor colorSensor = new ColorSensor(SensorPort.S1);
         // some objects that need to be instantiated
 		Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-		OdometryCorrection odometryCorrection = new OdometryCorrection(odometer, lightSensor);
+		OdometryCorrection odometryCorrection = new OdometryCorrection(odometer, colorSensor);
 
 		do {
 			// clear the display
