@@ -12,10 +12,11 @@ public class Lab2 {
         RConsole.println("Connected");
         int buttonChoice;
 
+        LightSensor lightSensor = new LightSensor(SensorPort.S1, true);
         // some objects that need to be instantiated
 		Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-		//OdometryCorrection odometryCorrection = new OdometryCorrection(odometer);
+		OdometryCorrection odometryCorrection = new OdometryCorrection(odometer, lightSensor);
 
 		do {
 			// clear the display
@@ -46,7 +47,7 @@ public class Lab2 {
 			// odometry correction
 			odometer.start();
 			odometryDisplay.start();
-			// odometryCorrection.start();
+			odometryCorrection.start();
 
 			// spawn a new Thread to avoid SquareDriver.drive() from blocking
 			(new Thread() {
