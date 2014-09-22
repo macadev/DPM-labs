@@ -31,11 +31,13 @@ public class OdometryDisplay extends Thread {
 			LCD.drawString("Y:              ", 0, 1);
 			LCD.drawString("T:              ", 0, 2);
             LCD.drawString("Light:          ", 0, 3);
+            LCD.drawString("Count:          ", 0, 4);
 
 			// get the odometry information
 			odometer.getPosition(position, new boolean[] { true, true, true });
 
             LCD.drawString(String.valueOf(odometryCorrection.getLight()), 7, 3);
+            LCD.drawString(String.valueOf(odometryCorrection.getLine_count()), 7, 4);
 
             // display odometry information
 			for (int i = 0; i < 3; i++) {
