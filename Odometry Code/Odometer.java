@@ -52,17 +52,17 @@ public class Odometer extends Thread {
             double dCenter = (dLeft + dRright) /2;
 
             RConsole.println("dLeft: "+String.valueOf(dLeft)+"\n"+"dRight: "+String.valueOf(dRright)+"\n"+"Distance travelled: "+String.valueOf(dCenter));
-            double detlaTheta = (dRright - dLeft) / WHEEL_DISTANCE;
-            RConsole.println("Delta theta: "+String.valueOf(detlaTheta));
+            double deltaTheta = (dRright - dLeft) / WHEEL_DISTANCE;
+            RConsole.println("Delta theta: "+String.valueOf(deltaTheta));
 
             synchronized (lock) {
                 //update prev tacho counts
                 prevTachoL += tachoDeltaL;
                 prevTachoR += tachoDeltaR;
 
-                theta = (theta + detlaTheta) % (2 * Math.PI);
+                theta = (theta + deltaTheta) % (2 * Math.PI);
 
-                x += dCenter *Math.sin(theta);
+                x += -(dCenter *Math.sin(theta));
                 y += dCenter *Math.cos(theta);
 			}
 

@@ -6,13 +6,13 @@ import lejos.nxt.*;
 import lejos.nxt.LightSensor;
 
 public class OdometryCorrection extends Thread {
-    private double offset = 4.5;
-	private static final long CORRECTION_PERIOD = 10;
+    private double offset = 5;
+	private static final long CORRECTION_PERIOD = 20;
 	private Odometer odometer;
     private ColorSensor colorSensor;
     private int light;
-    private static final double THETA_THRESHOLD = 3;
-    private static final int LIGHT_THRESHOLD = 350; //TODO: Tweak this value
+    private static final double THETA_THRESHOLD = 10;
+    private static final int LIGHT_THRESHOLD = 500; //TODO: Tweak this value
     private int line_count=0;
 	// constructor
 	public OdometryCorrection(Odometer odometer, ColorSensor colorSensor) {
@@ -25,17 +25,21 @@ public class OdometryCorrection extends Thread {
 		long correctionStart, correctionEnd;
 
 
-        int prevRead=0;
-        double [] possibleX = {0,-15,-45,-45,-15,0};
-        double [] possibleY = {0,15,45,45,15,0};
+        float snapX = 0;
+        float snapY = 0;
         double[] position = new double[3];
         double orientation;
         double x,y;
 		while (true) {
 			correctionStart = System.currentTimeMillis();
+			double valX = odometer.getX();
+			double valY = odometer.getY();
+			snapX = ((int)Math.abs(odometer.getX()))/30+1; 
+	        snapY = ((int)Math.abs(odometer.getY()))/30+1;
+			
             light = colorSensor.getNormalizedLightValue();
             //this checks if we are on a line and only count each line once
-            if (light < LIGHT_THRESHOLD && prevRead>LIGHT_THRESHOLD) {
+            if (light < LIGHT_THRESHOLD) {
                 odometer.getPosition(position, new boolean[]{true, true, true});
                 Sound.beep();
 
@@ -45,34 +49,25 @@ public class OdometryCorrection extends Thread {
 
                 if (Math.abs(orientation) < THETA_THRESHOLD) {
                     //rotated 0 degrees, traveling in +y
-                      y = position[1] + offset;
-                    double frac = y /15.0;
-                    double disIncrement = Math.abs(frac%1)<0.5 ?  Math.floor(frac) : Math.ceil(frac);
-                    odometer.setY(disIncrement*15-offset);
-
+                	
+                	odometer.setY((Math.round(((valY - offset - 15) / 30)) * 30 + 15 + offset));                	
+                	
                 } else if (Math.abs(orientation + 90) < THETA_THRESHOLD) {
                     //rotated 90 degrees, traveling in -x
-                   x = position[0] - offset;
-                    double frac = x /15.0;
-                    double disIncrement = Math.abs(frac%1)<0.5 ?  Math.floor(frac) : Math.ceil(frac);
-                    odometer.setX(disIncrement*15-offset);
-
+                	
+                	odometer.setX((Math.round(((valX - offset - 15) / 30)) * 30 + 15 + offset));
+                	
                 } else if (Math.abs(orientation + 180) < THETA_THRESHOLD) {
                     //rotated 180 degrees, traveling in -y
-                    y = position[1] - offset;
-                    double frac = y /15.0;
-                    double disIncrement = Math.abs(frac%1)<0.5 ?  Math.floor(frac) : Math.ceil(frac);
-                    odometer.setY(disIncrement*15-offset);
-
-                } else if (Math.abs(orientation + 270) < THETA_THRESHOLD) {
+                	
+                	odometer.setY((Math.round(((valY - offset - 15) / 30)) * 30 + 15 + offset));
+                	
+                 } else if (Math.abs(orientation + 270) < THETA_THRESHOLD) {
                     //rotated 270 degrees, traveling in +x
-                    x = position[0] + offset;
-                    double frac = x /15.0;
-                    double disIncrement = Math.abs(frac%1)<0.5 ?  Math.floor(frac) : Math.ceil(frac);
-                    odometer.setX(disIncrement*15-offset);
+                	
+                	odometer.setX((Math.round(((valX - offset - 15) / 30)) * 30 + 15 + offset));   	
                 }
             }
-            prevRead=light;
 
 			// this ensures the odometry correction occurs only once every period
 			correctionEnd = System.currentTimeMillis();
@@ -92,7 +87,7 @@ public class OdometryCorrection extends Thread {
         return light;
     }
 
-    public int getLine_count() {
+    public int getLineCount() {
         return line_count;
     }
 }
