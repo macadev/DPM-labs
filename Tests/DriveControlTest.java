@@ -18,10 +18,10 @@ public class DriveControlTest extends TestCase {
 
     public void testComputeOptimalRotationAngle() throws Exception {
         Assert.assertEquals(-60.0, driveControl.computeOptimalRotationAngle(60, 0));
-        Assert.assertEquals(60.0, driveControl.computeOptimalRotationAngle(-60, 0));
-        Assert.assertEquals(-60.0, driveControl.computeOptimalRotationAngle(0, -60));
+        Assert.assertEquals(60.0, driveControl.computeOptimalRotationAngle(300, 0));
+        Assert.assertEquals(-60.0, driveControl.computeOptimalRotationAngle(0, 300));
         Assert.assertEquals(60.0, driveControl.computeOptimalRotationAngle(0, 60));
-        Assert.assertEquals(0.0, driveControl.computeOptimalRotationAngle(180, -180));
+        Assert.assertEquals(0.0, driveControl.computeOptimalRotationAngle(180, 180));
         Assert.assertEquals(2.0, driveControl.computeOptimalRotationAngle(359, 1));
         Assert.assertEquals(180.0, driveControl.computeOptimalRotationAngle(0, 180));
         Assert.assertEquals(-180.0, driveControl.computeOptimalRotationAngle(180, 0));
