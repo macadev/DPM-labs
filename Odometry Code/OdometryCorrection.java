@@ -1,13 +1,10 @@
-/* 
+/*
  * OdometryCorrection.java
  */
 import lejos.nxt.*;
 
-import lejos.nxt.LightSensor;
-
 public class OdometryCorrection extends Thread {
-    private double offset = 5;
-	private static final long CORRECTION_PERIOD = 20;
+    private static final long CORRECTION_PERIOD = 20;
 	private Odometer odometer;
     private ColorSensor colorSensor;
     private int light;
@@ -25,23 +22,17 @@ public class OdometryCorrection extends Thread {
 		long correctionStart, correctionEnd;
 
 
-        float snapX = 0;
-        float snapY = 0;
         double[] position = new double[3];
         double orientation;
-        double x,y;
-		while (true) {
+       	while (true) {
 			correctionStart = System.currentTimeMillis();
 			double valX = odometer.getX();
 			double valY = odometer.getY();
-			snapX = ((int)Math.abs(odometer.getX()))/30+1; 
-	        snapY = ((int)Math.abs(odometer.getY()))/30+1;
-			
+
             light = colorSensor.getNormalizedLightValue();
             //this checks if we are on a line and only count each line once
             if (light < LIGHT_THRESHOLD) {
                 odometer.getPosition(position, new boolean[]{true, true, true});
-                Sound.beep();
 
                 line_count++;
 
@@ -49,23 +40,27 @@ public class OdometryCorrection extends Thread {
 
                 if (Math.abs(orientation) < THETA_THRESHOLD) {
                     //rotated 0 degrees, traveling in +y
-                	
-                	odometer.setY((Math.round(((valY - offset - 15) / 30)) * 30 + 15 + offset));                	
+
+                	//Snap distance to the closest line
+                	odometer.setY(closestLine(valY, orientation));
                 	
                 } else if (Math.abs(orientation + 90) < THETA_THRESHOLD) {
-                    //rotated 90 degrees, traveling in -x
-                	
-                	odometer.setX((Math.round(((valX - offset - 15) / 30)) * 30 + 15 + offset));
+                    //rotated 90 degrees, traveling in +x
+
+                    //Snap distance to the closest line
+                    odometer.setX(closestLine(valX, orientation));
                 	
                 } else if (Math.abs(orientation + 180) < THETA_THRESHOLD) {
                     //rotated 180 degrees, traveling in -y
-                	
-                	odometer.setY((Math.round(((valY - offset - 15) / 30)) * 30 + 15 + offset));
+
+                    //Snap distance to the closest line
+                    odometer.setY((closestLine(valY, orientation)));
                 	
                  } else if (Math.abs(orientation + 270) < THETA_THRESHOLD) {
-                    //rotated 270 degrees, traveling in +x
-                	
-                	odometer.setX((Math.round(((valX - offset - 15) / 30)) * 30 + 15 + offset));   	
+                    //rotated 270 degrees, traveling in -x
+
+                    //Snap distance to the closest line
+                    odometer.setX(closestLine(valX, orientation));
                 }
             }
 
@@ -83,6 +78,25 @@ public class OdometryCorrection extends Thread {
 			}
 		}
 	}
+
+    /**
+     * compute the closest line to the distance provided
+     * @param distance distance you have when crossing the line
+     * @return position of the line you crossed
+     */
+    public double closestLine( double distance, double angle){
+        double offset = 5;
+        if (Math.abs(angle) < 150) {
+            if (distance < 30) {
+                //we know it is the first line we cross in that direction
+                return 15 - offset;
+            }
+            //sensor is farther from the origin than the center of the robot
+            return Math.round(((distance + offset - 15) / 30)) * 30 + 15 - offset;
+        }
+        //sensor is closer to the origin than the center of the robot
+        return Math.round(((distance - offset - 15) / 30)) * 30 + 15 + offset;
+    }
     public int getLight (){
         return light;
     }

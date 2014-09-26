@@ -45,15 +45,14 @@ public class Odometer extends Thread {
 	        //Get variation tacho
             int tachoDeltaL = Motor.A.getTachoCount() - prevTachoL;
             int tachoDeltaR = Motor.B.getTachoCount() - prevTachoR;
-            RConsole.println("Delta left: "+String.valueOf(tachoDeltaL)+"\nDelta right: "+String.valueOf(tachoDeltaR));
 
+            //convert tacho counts to travelled distance
             double dLeft = (WHEEL_RADIUS * Math.PI * tachoDeltaL) / 180;
             double dRright = (WHEEL_RADIUS * Math.PI * tachoDeltaR) / 180;
             double dCenter = (dLeft + dRright) /2;
 
-            RConsole.println("dLeft: "+String.valueOf(dLeft)+"\n"+"dRight: "+String.valueOf(dRright)+"\n"+"Distance travelled: "+String.valueOf(dCenter));
+            //use difference in distance to get angle
             double deltaTheta = (dRright - dLeft) / WHEEL_DISTANCE;
-            RConsole.println("Delta theta: "+String.valueOf(deltaTheta));
 
             synchronized (lock) {
                 //update prev tacho counts
@@ -62,6 +61,7 @@ public class Odometer extends Thread {
 
                 theta = (theta + deltaTheta) % (2 * Math.PI);
 
+                //update current position
                 x += -(dCenter *Math.sin(theta));
                 y += dCenter *Math.cos(theta);
 			}

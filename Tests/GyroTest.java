@@ -1,7 +1,4 @@
-import lejos.nxt.Button;
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.SensorPort;
+import lejos.nxt.*;
 import lejos.nxt.addon.GyroDirectionFinder;
 import lejos.nxt.addon.GyroSensor;
 
@@ -18,6 +15,7 @@ public class GyroTest {
         GyroMotor gyroMotor = new GyroMotor(motor, poller);
         poller.start();
         gyroMotor.start();
+        Sound.beepSequenceUp();
 
         Button.waitForAnyPress();
         System.exit(0);
