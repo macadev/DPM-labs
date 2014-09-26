@@ -22,6 +22,11 @@ public class Odometer extends Thread {
 	private final Object lock;
 
 	// default constructor
+    public Odometer (){
+        WHEEL_DISTANCE = 15;
+        WHEEL_RADIUS =2.8;
+        lock = new Object();
+    }
 	public Odometer(double wheel_radius, double wheel_distance) {
 		x = 0.0;
 		y = 0.0;
