@@ -9,6 +9,9 @@ public class DriveControl extends Thread {
     private NXTRegulatedMotor leftMotor, rightMotor;
     private double wheelRadius, width;
 
+    private final int TURN_SPEED = 150;
+    private final int STRAIGHT_SPEED = 200;
+
     /**
      * default constructor
      * @param odometer
@@ -27,6 +30,18 @@ public class DriveControl extends Thread {
 
     public void travelTo(double x, double y){
 
+        double [] currentPosition = new double[3];
+        odometer.getPosition(currentPosition, new boolean[]{true, true, true});
+
+        Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
+
+        turnTo(vector.getOrientation());
+
+        leftMotor.setSpeed(STRAIGHT_SPEED);
+        rightMotor.setSpeed(STRAIGHT_SPEED);
+
+        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
+        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
     }
 
     /**
@@ -40,14 +55,17 @@ public class DriveControl extends Thread {
 
         double rotationAngle = computeOptimalRotationAngle(thetaCurrent,theta);
 
-        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle));
-        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle));
+        leftMotor.setSpeed(TURN_SPEED);
+        rightMotor.setSpeed(TURN_SPEED);
+        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), true);
+        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), false);
 
     }
 
     public boolean isNavigating(){
 
-        return false;
+        return leftMotor.isMoving() || rightMotor.isMoving();
+        
     }
 
     /**
@@ -56,7 +74,7 @@ public class DriveControl extends Thread {
      * @param desiredTheta desired heading
      * @return the signed number of degrees to rotate, sign indicated direction
      */
-    public double computeOptimalRotationAngle(double currentTheta, double desiredTheta){
+    public static double computeOptimalRotationAngle(double currentTheta, double desiredTheta){
         //implementation of slide 13 in navigation tutorial
         if (desiredTheta-currentTheta < -180){
             return (desiredTheta-currentTheta)+360;
@@ -65,5 +83,31 @@ public class DriveControl extends Thread {
         } else {
             return desiredTheta - currentTheta;
         }
+    }
+
+    /**
+     * Converts a set of coordinates in a vector displacement with orientation and magnitude
+     * @param currentPosition array of 3 elements respectively (x, y, theta) representing the current psotition and orientation
+     * @param destination array of 2 elements being (x, y)
+     * @return Vector representing the displacement to happen (r, theta)
+     */
+    public static Vector vectorDisplacement(double[] currentPosition, double[] destination){
+        Vector vector = new Vector();
+        if (currentPosition.length == 3 && destination.length == 2){
+            //expnaded pythagora
+            vector.setMagnitude(Math.sqrt(destination[0] * destination[0] - 2 * destination[0] * currentPosition[0] + currentPosition[0] * currentPosition[0] + destination[1] * destination[1] - 2 * destination[1] * currentPosition[1] + currentPosition[1] * currentPosition[1]));
+
+            double x = destination[0] - currentPosition[0];
+            double y = destination[1] - currentPosition[1];
+
+            if (x>0) {
+                vector.setOrientation(Math.atan((y) / (x)));
+            } else if (x<0 && y>0){
+                vector.setOrientation(Math.atan((y) / (x)) + Math.PI);
+            } else if (x<0 && y<0){
+                vector.setOrientation(Math.atan((y) / (x))-Math.PI);
+            }
+        }
+    return vector;
     }
 }
