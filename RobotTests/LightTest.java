@@ -2,8 +2,9 @@ import lejos.nxt.*;
 
 
 /**
- * Created by David on 14-09-22.
- * id. 260583602
+ * Simple program reading the value of the light sensor in port 1
+ *
+ * @author David id. 260583602
  */
 public class LightTest {
     public static void main(String [] argv){

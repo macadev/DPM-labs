@@ -65,7 +65,7 @@ public class DriveControl extends Thread {
     public boolean isNavigating(){
 
         return leftMotor.isMoving() || rightMotor.isMoving();
-        
+
     }
 
     /**

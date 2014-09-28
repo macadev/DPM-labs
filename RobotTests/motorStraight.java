@@ -1,12 +1,14 @@
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
-
+/**
+ * Simple test program for driving the NXT in a straight line and connecting to a RConsole on PC
+ */
 public class motorStraight {
 
-    public static NXTRegulatedMotor motorA = Motor.A, motorC = Motor.C;
+    private NXTRegulatedMotor motorA = Motor.A, motorC = Motor.C;
 
-    public static void main(String [] args) {
+    public void main(String [] args) {
         RConsole.openUSB(20000);
         motorA.setSpeed(100);
         motorC.setSpeed(100);
