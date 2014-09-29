@@ -30,7 +30,7 @@ public class Odometer extends Thread {
 	public Odometer(double wheel_radius, double wheel_distance) {
 		x = 0.0;
 		y = 0.0;
-		theta = 0.0;
+		theta = Math.PI/2;
         WHEEL_DISTANCE = wheel_distance;
         WHEEL_RADIUS = wheel_radius;
 		lock = new Object();
@@ -123,6 +123,7 @@ public class Odometer extends Thread {
 
 		synchronized (lock) {
 			result = theta;
+            RConsole.println("Theta: "+result);
 		}
 
 		return result;

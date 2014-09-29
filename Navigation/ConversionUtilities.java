@@ -20,10 +20,10 @@ public class ConversionUtilities {
      *
      * @param wheelRadius the radius of the wheel
      * @param width width of the wheel base, or distance between the wheels
-     * @param angle the angle the robot should rotate
+     * @param angle the angle the robot should rotate in radians
      * @return the angle a motor should travel for the robot to rotate
      */
     public static int convertAngleToMotorRotation(double wheelRadius, double width, double angle) {
-        return convertDistanceToMotorRotation(wheelRadius, Math.PI * width * angle / 360.0);
+        return convertDistanceToMotorRotation(wheelRadius, 2*Math.PI * width * angle / 180.0);
     }
 }

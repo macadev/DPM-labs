@@ -1,6 +1,7 @@
 import lejos.nxt.Button;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.comm.RConsole;
 
 /**
  * @author David id. 260583602
@@ -14,18 +15,16 @@ public class Driver {
     private static NXTRegulatedMotor rightMotor = Motor.B;
 
     public static void main (String [] argv){
+        RConsole.openUSB(30000);
 
+        RConsole.println("Connected");
         Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
-        odometer.start();
-
         OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-        odometryDisplay.start();
-
         DriveControl driveControl = new DriveControl(odometer, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS);
-        driveControl.start();
 
-        Button.waitForAnyPress();
-        System.exit(0);
+        odometer.start();
+        odometryDisplay.start();
+        driveControl.start();
 
     }
 }

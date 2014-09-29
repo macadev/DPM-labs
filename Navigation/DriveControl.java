@@ -1,4 +1,7 @@
+import lejos.nxt.Button;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.Sound;
+import lejos.nxt.comm.RConsole;
 
 /**
  * Created by David on 14-09-25.
@@ -30,9 +33,9 @@ public class DriveControl extends Thread {
     }
 
     public void run(){
-        travelTo(60,30);
-        travelTo(30,30);
-        travelTo(30,60);
+        travelTo(60, 30);
+        travelTo(30, 30);
+        travelTo(30, 60);
         travelTo(60, 0);
     }
 
@@ -43,9 +46,10 @@ public class DriveControl extends Thread {
         odometer.getPosition(currentPosition, new boolean[]{true, true, true});
 
         Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
-
+        Sound.beep();
         turnTo(vector.getOrientation());
 
+        Sound.beepSequence();
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
 
@@ -66,14 +70,21 @@ public class DriveControl extends Thread {
         navigating =true;
 
         //implementation of slide 13 in navigation tutorial
-        double thetaCurrent = this.odometer.getTheta();
+        //convert theta from odometer to radians
+        double thetaCurrent = odometer.getTheta();
+        RConsole.println("Current Theta: "+ String.valueOf(thetaCurrent));
+        Button.waitForAnyPress();
 
         double rotationAngle = computeOptimalRotationAngle(thetaCurrent,theta);
+        RConsole.println("Rotation angle: "+ String.valueOf(rotationAngle));
+        Button.waitForAnyPress();
 
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), true);
-        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), false);
+        int angle = ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle);
+        RConsole.println(String.valueOf(angle));
+        leftMotor.rotate(-angle, true);
+        rightMotor.rotate(angle, false);
 
         navigating = false;
         if (!closeEnough(theta)){
