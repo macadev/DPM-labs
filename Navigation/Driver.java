@@ -16,12 +16,13 @@ public class Driver {
     public static void main (String [] argv){
 
         Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
+        odometer.start();
 
         OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-        odometryDisplay.run();
+        odometryDisplay.start();
 
         DriveControl driveControl = new DriveControl(odometer, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS);
-        driveControl.run();
+        driveControl.start();
 
         Button.waitForAnyPress();
         System.exit(0);
