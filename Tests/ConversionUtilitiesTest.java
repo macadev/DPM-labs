@@ -10,7 +10,7 @@ public class ConversionUtilitiesTest extends TestCase {
 
     public void testConvertAngleToMotorRotation() throws Exception {
 
-        Assert.assertEquals(17, ConversionUtilities.convertAngleToMotorRotation(2.8, 10, 10));
-        Assert.assertEquals(-17, ConversionUtilities.convertAngleToMotorRotation(2.8, 10, -10));
+        Assert.assertEquals(321, ConversionUtilities.convertAngleToMotorRotation(2.8, 10, Math.PI));
+        Assert.assertEquals(-321, ConversionUtilities.convertAngleToMotorRotation(2.8, 10, -Math.PI));
     }
 }
