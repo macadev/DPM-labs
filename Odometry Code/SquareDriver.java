@@ -39,8 +39,8 @@ public class SquareDriver {
 			leftMotor.setSpeed(ROTATE_SPEED);
 			rightMotor.setSpeed(ROTATE_SPEED);
 
-			leftMotor.rotate(convertAngle(leftRadius, width, 90.0), true);
-			rightMotor.rotate(-convertAngle(rightRadius, width, 90.0), false);
+			leftMotor.rotate(convertAngle(leftRadius, width, Math.PI/2), true);
+			rightMotor.rotate(-convertAngle(rightRadius, width, Math.PI/2), false);
 		}
 	}
 

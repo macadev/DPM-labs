@@ -18,11 +18,11 @@ public class DriveControl extends Thread {
     private boolean navigating = false;
     /**
      * default constructor
-     * @param odometer
-     * @param leftMotor
-     * @param rightMotor
-     * @param width
-     * @param wheelRadius
+     * @param odometer Odometer object
+     * @param leftMotor reference to the left motor object
+     * @param rightMotor reference to the right motor
+     * @param width with of the wheel space
+     * @param wheelRadius radius of each wheel
      */
     public DriveControl(Odometer odometer, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width, double wheelRadius){
         this.odometer=odometer;
@@ -66,28 +66,30 @@ public class DriveControl extends Thread {
      * @param theta the desired angle to rotate to
      */
     public void turnTo(double theta){
-
+/**
+ * SHOULD BE ALL CLEAR
+ * LOOK AT TRAVELTO NEXT
+ */
         navigating =true;
 
         //implementation of slide 13 in navigation tutorial
-        //convert theta from odometer to radians
         double thetaCurrent = odometer.getTheta();
         RConsole.println("Current Theta: "+ String.valueOf(thetaCurrent));
-        Button.waitForAnyPress();
 
         double rotationAngle = computeOptimalRotationAngle(thetaCurrent,theta);
         RConsole.println("Rotation angle: "+ String.valueOf(rotationAngle));
-        Button.waitForAnyPress();
 
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
         int angle = ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle);
-        RConsole.println(String.valueOf(angle));
+        RConsole.println(String.valueOf("Motor angle: "+angle));
+
         leftMotor.rotate(-angle, true);
         rightMotor.rotate(angle, false);
 
         navigating = false;
         if (!closeEnough(theta)){
+            RConsole.println("Not close enough, redo!");
             turnTo(theta);
         }
     }
@@ -106,10 +108,10 @@ public class DriveControl extends Thread {
      */
     public static double computeOptimalRotationAngle(double currentTheta, double desiredTheta){
         //implementation of slide 13 in navigation tutorial
-        if (desiredTheta-currentTheta < -180){
-            return (desiredTheta-currentTheta)+360;
-        } else if (desiredTheta - currentTheta > 180){
-            return desiredTheta - currentTheta - 360;
+        if (desiredTheta-currentTheta < -Math.PI){
+            return (desiredTheta-currentTheta)+2* Math.PI;
+        } else if (desiredTheta - currentTheta > Math.PI){
+            return desiredTheta - currentTheta - 2* Math.PI;
         } else {
             return desiredTheta - currentTheta;
         }

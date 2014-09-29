@@ -43,14 +43,14 @@ public class DriveControlTest extends TestCase {
     }
 
     public void testComputeOptimalRotationAngle() throws Exception {
-        Assert.assertEquals(-60.0, DriveControl.computeOptimalRotationAngle(60, 0));
-        Assert.assertEquals(60.0, DriveControl.computeOptimalRotationAngle(300, 0));
-        Assert.assertEquals(-60.0, DriveControl.computeOptimalRotationAngle(0, 300));
-        Assert.assertEquals(60.0, DriveControl.computeOptimalRotationAngle(0, 60));
-        Assert.assertEquals(0.0, DriveControl.computeOptimalRotationAngle(180, 180));
-        Assert.assertEquals(2.0, DriveControl.computeOptimalRotationAngle(359, 1));
-        Assert.assertEquals(180.0, DriveControl.computeOptimalRotationAngle(0, 180));
-        Assert.assertEquals(-180.0, DriveControl.computeOptimalRotationAngle(180, 0));
-        Assert.assertEquals(70.0, DriveControl.computeOptimalRotationAngle(300, 10));
+        Assert.assertEquals(-Math.PI/3, DriveControl.computeOptimalRotationAngle(Math.PI/3, 0));
+        Assert.assertEquals(Math.PI/3, DriveControl.computeOptimalRotationAngle(5*Math.PI/3, 0));
+        Assert.assertEquals(-Math.PI/3, DriveControl.computeOptimalRotationAngle(0, 300*Math.PI/180));
+        Assert.assertEquals(Math.PI/3, DriveControl.computeOptimalRotationAngle(0, 60*Math.PI/180));
+        Assert.assertEquals(0.0, DriveControl.computeOptimalRotationAngle(Math.PI, Math.PI));
+        Assert.assertEquals(2.0*Math.PI/180, DriveControl.computeOptimalRotationAngle(359*Math.PI/180, 1*Math.PI/180));
+        Assert.assertEquals(Math.PI, DriveControl.computeOptimalRotationAngle(0, Math.PI));
+        Assert.assertEquals(-Math.PI, DriveControl.computeOptimalRotationAngle(Math.PI, 0));
+        Assert.assertEquals(7.0*Math.PI/18, DriveControl.computeOptimalRotationAngle(30*Math.PI/18, 10*Math.PI/180));
     }
 }

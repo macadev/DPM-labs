@@ -67,8 +67,8 @@ public class Odometer extends Thread {
                 theta = (theta + deltaTheta) % (2 * Math.PI);
 
                 //update current position
-                x += -(dCenter *Math.sin(theta));
-                y += dCenter *Math.cos(theta);
+                x += dCenter * Math.cos(theta);
+                y += dCenter * Math.sin(theta);
 			}
 
 			// this ensures that the odometer only runs once every period
@@ -94,7 +94,7 @@ public class Odometer extends Thread {
 			if (update[1])
 				position[1] = y;
 			if (update[2])
-				position[2] = theta*180/Math.PI;
+				position[2] = theta;
 		}
 	}
 
@@ -123,8 +123,7 @@ public class Odometer extends Thread {
 
 		synchronized (lock) {
 			result = theta;
-            RConsole.println("Theta: "+result);
-		}
+        }
 
 		return result;
 	}

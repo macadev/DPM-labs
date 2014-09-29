@@ -14,9 +14,8 @@ public class ConversionUtilities {
     }
 
     /**
-     * Conversion from desired rotation of the robot to motor angle (tacho count)
-     *
-     * This assumes that the robot uses skid rotation and that the two motors will travel in opposite directions
+     * Translates a desired rotation of the robot around its center to a
+     * number of degrees each wheel should turn
      *
      * @param wheelRadius the radius of the wheel
      * @param width width of the wheel base, or distance between the wheels
@@ -24,6 +23,6 @@ public class ConversionUtilities {
      * @return the angle a motor should travel for the robot to rotate
      */
     public static int convertAngleToMotorRotation(double wheelRadius, double width, double angle) {
-        return convertDistanceToMotorRotation(wheelRadius, 2*Math.PI * width * angle / 180.0);
+        return convertDistanceToMotorRotation(wheelRadius, width * angle / 2);
     }
 }
