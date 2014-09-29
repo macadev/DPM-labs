@@ -29,6 +29,13 @@ public class DriveControl extends Thread {
         this.width = width;
     }
 
+    public void run(){
+        travelTo(60,30);
+        travelTo(30,30);
+        travelTo(30,60);
+        travelTo(60, 0);
+    }
+
     public void travelTo(double x, double y){
 
         navigating = true;
@@ -42,8 +49,8 @@ public class DriveControl extends Thread {
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
 
-        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
-        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
+        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
+        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), false);
         navigating = false;
         if (!closeEnough(x, y)){
             travelTo(x,y);
