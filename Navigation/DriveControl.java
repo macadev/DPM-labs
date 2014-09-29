@@ -12,6 +12,7 @@ public class DriveControl extends Thread {
     private final int TURN_SPEED = 150;
     private final int STRAIGHT_SPEED = 200;
 
+    private boolean navigating = false;
     /**
      * default constructor
      * @param odometer
@@ -30,6 +31,7 @@ public class DriveControl extends Thread {
 
     public void travelTo(double x, double y){
 
+        navigating = true;
         double [] currentPosition = new double[3];
         odometer.getPosition(currentPosition, new boolean[]{true, true, true});
 
@@ -42,6 +44,10 @@ public class DriveControl extends Thread {
 
         leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
         rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()));
+        navigating = false;
+        if (!closeEnough(x, y)){
+            travelTo(x,y);
+        }
     }
 
     /**
@@ -49,6 +55,8 @@ public class DriveControl extends Thread {
      * @param theta the desired angle to rotate to
      */
     public void turnTo(double theta){
+
+        navigating =true;
 
         //implementation of slide 13 in navigation tutorial
         double thetaCurrent = this.odometer.getTheta();
@@ -60,11 +68,15 @@ public class DriveControl extends Thread {
         leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), true);
         rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle), false);
 
+        navigating = false;
+        if (!closeEnough(theta)){
+            turnTo(theta);
+        }
     }
 
     public boolean isNavigating(){
 
-        return leftMotor.isMoving() || rightMotor.isMoving();
+        return navigating;
 
     }
 
@@ -110,4 +122,13 @@ public class DriveControl extends Thread {
         }
     return vector;
     }
+
+    public boolean closeEnough(double x, double y) {
+        return Math.abs(x - odometer.getX()) < 1.00 && Math.abs(y - odometer.getY()) < 1.00;
+    }
+
+    public boolean closeEnough(double theta) {
+        return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(1.00);
+    }
+
 }
