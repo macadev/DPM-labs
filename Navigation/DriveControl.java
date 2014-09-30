@@ -15,6 +15,9 @@ public class DriveControl extends Thread {
     private final int TURN_SPEED = 150;
     private final int STRAIGHT_SPEED = 200;
 
+    private final static double ACCEPTABLE_ANGLE = 1.00;
+    private final static double AGGEPTABLE_LINEAR = 1.00;
+
     private boolean navigating = false;
     /**
      * default constructor
@@ -32,6 +35,9 @@ public class DriveControl extends Thread {
         this.width = width;
     }
 
+    /**
+     * main runnable that drives the robot around
+     */
     public void run(){
         travelTo(60, 30);
         travelTo(30, 30);
@@ -39,6 +45,11 @@ public class DriveControl extends Thread {
         travelTo(60, 0);
     }
 
+    /**
+     * Given a point (x,y), this method will move the robot to those coordinates
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     public void travelTo(double x, double y){
 
         navigating = true;
@@ -46,10 +57,9 @@ public class DriveControl extends Thread {
         odometer.getPosition(currentPosition, new boolean[]{true, true, true});
 
         Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
-        Sound.beep();
+
         turnTo(vector.getOrientation());
 
-        Sound.beepSequence();
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
 
@@ -57,6 +67,7 @@ public class DriveControl extends Thread {
         rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), false);
         navigating = false;
         if (!closeEnough(x, y)){
+            RConsole.println("Not close enough, redo!");
             travelTo(x,y);
         }
     }
@@ -66,23 +77,17 @@ public class DriveControl extends Thread {
      * @param theta the desired angle to rotate to
      */
     public void turnTo(double theta){
-/**
- * SHOULD BE ALL CLEAR
- * LOOK AT TRAVELTO NEXT
- */
+
         navigating =true;
 
         //implementation of slide 13 in navigation tutorial
         double thetaCurrent = odometer.getTheta();
-        RConsole.println("Current Theta: "+ String.valueOf(thetaCurrent));
 
         double rotationAngle = computeOptimalRotationAngle(thetaCurrent,theta);
-        RConsole.println("Rotation angle: "+ String.valueOf(rotationAngle));
 
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
         int angle = ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, rotationAngle);
-        RConsole.println(String.valueOf("Motor angle: "+angle));
 
         leftMotor.rotate(-angle, true);
         rightMotor.rotate(angle, false);
@@ -94,6 +99,10 @@ public class DriveControl extends Thread {
         }
     }
 
+    /**
+     * Check if the robot is travelling
+     * @return is the robot travelling
+     */
     public boolean isNavigating(){
 
         return navigating;
@@ -143,12 +152,23 @@ public class DriveControl extends Thread {
     return vector;
     }
 
+    /**
+     * Check if the coordinates of the robot are within an acceptable range to those specified
+     * @param x target x coordinate
+     * @param y target y coordinate
+     * @return boolean true if in acceptable range
+     */
     public boolean closeEnough(double x, double y) {
-        return Math.abs(x - odometer.getX()) < 1.00 && Math.abs(y - odometer.getY()) < 1.00;
+        return Math.abs(x - odometer.getX()) < AGGEPTABLE_LINEAR && Math.abs(y - odometer.getY()) < AGGEPTABLE_LINEAR;
     }
 
+    /**
+     * Check if the orientaition of the robot is within an acceptable range of the specified angle
+     * @param theta target orientation
+     * @return boolean true if in acceptable range
+     * */
     public boolean closeEnough(double theta) {
-        return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(1.00);
+        return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(ACCEPTABLE_ANGLE);
     }
 
 }

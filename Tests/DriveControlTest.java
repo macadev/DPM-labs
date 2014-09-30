@@ -2,15 +2,11 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import lejos.nxt.Motor;
 
+/**
+ * Unit tests for the logic functions in DriveControl class
+ */
 public class DriveControlTest extends TestCase {
     DriveControl  driveControl = new DriveControl(new MockOdometer(), Motor.A, Motor.B, 1,1);
-    public void testTravelTo() throws Exception {
-        Assert.assertEquals(true,true);
-    }
-
-    public void testTurnTo() throws Exception {
-
-    }
 
     public void testPolarDisplacement() throws Exception {
         double [] currentPosition;

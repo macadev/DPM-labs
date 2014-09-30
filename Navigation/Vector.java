@@ -1,6 +1,7 @@
 /**
- * Created by David on 14-09-28.
- * id. 260583602
+ * Vector class represents the magnitude and orientation of a quantity
+ *
+ * @author David id. 260583602
  */
 public class Vector {
     private double magnitude;
@@ -28,6 +29,10 @@ public class Vector {
         this.orientation = orientation;
     }
 
+    /**
+     * Convert a polar vector to its cartesian representation
+     * @return double[2] representing the (x,y) pair
+     */
     public double [] toCartesian(){
         return new double [] {magnitude*Math.sin(orientation), magnitude*Math.cos(orientation)};
     }

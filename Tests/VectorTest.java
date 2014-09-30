@@ -3,6 +3,9 @@ import junit.framework.TestCase;
 
 import java.util.Map;
 
+/**
+ * Unit tests for the Vector type
+ */
 public class VectorTest extends TestCase {
 
     public void testGetMagnitude() throws Exception {

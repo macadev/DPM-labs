@@ -4,6 +4,8 @@ import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.comm.RConsole;
 
 /**
+ * Lab3 main executable
+ *
  * @author David id. 260583602
  */
 public class Driver {

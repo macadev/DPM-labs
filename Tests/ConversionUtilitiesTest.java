@@ -1,6 +1,9 @@
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+/**
+ * Unit tests for the conversions utilities
+ */
 public class ConversionUtilitiesTest extends TestCase {
 
     public void testConvertDistanceToMotorRotation() throws Exception {

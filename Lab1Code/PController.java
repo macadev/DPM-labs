@@ -76,6 +76,7 @@ public class PController implements UltrasonicController {
      * sets right motor to higher speed proportional to error,
      * sets left motor to normal speed to increase turning radius
      * allow for full 180 turns more easilly
+     * @param differential the speed difference
      *
      */
 	public void rightMotorFaster( float differential ) {
@@ -86,6 +87,7 @@ public class PController implements UltrasonicController {
 	/**
      * sets left motor to higher speed proportional to error,
      * sets right motor to lower speed proportional to error.
+     * @param differential the speed difference
      */
 	public void leftMotorFaster( float differential ) {
 		this.leftMotor.setSpeed(differential + motorStraight);
@@ -102,9 +104,9 @@ public class PController implements UltrasonicController {
 	}
 	
 	/**
-     * returns quantity to modify motor speeds. 
      * Calculation based on the current distance, band center,
      * and a proportionality constant.
+     * @return quantity to modify motor speeds.
      */
 	public float recalculateSpeed() {
 		int error = Math.abs(this.bandCenter - this.distance);
