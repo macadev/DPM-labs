@@ -182,14 +182,6 @@ public class DriveControl extends Thread {
         }
     }
 
-    private static int convertDistance(double radius, double distance) {
-        return (int) ((180.0 * distance) / (Math.PI * radius));
-    }
-
-    private static int convertAngle(double radius, double width, double angle) {
-        return convertDistance(radius, Math.PI * width * angle / 360.0);
-    }
-
     public void avoid() {
         leftMotor.stop();
         rightMotor.stop();
@@ -197,41 +189,40 @@ public class DriveControl extends Thread {
         // turn 90 degrees clockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(convertAngle(wheelRadius, width, 90), true);
-        rightMotor.rotate(-convertAngle(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
+        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
-        leftMotor.rotate(convertDistance(wheelRadius, 25), true);
-        rightMotor.rotate(convertDistance(wheelRadius, 25), false);
+        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 25), true);
+        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 25), false);
         // turn 90 degrees counterclockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(-convertAngle(wheelRadius, width, 90), true);
-        rightMotor.rotate(convertAngle(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
+        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
-        leftMotor.rotate(convertDistance(wheelRadius, 45), true);
-        rightMotor.rotate(convertDistance(wheelRadius, 45), false);
+        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 45), true);
+        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 45), false);
         // turn 90 degrees counterclockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(-convertAngle(wheelRadius, width, 90), true);
-        rightMotor.rotate(convertAngle(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
+        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
-        leftMotor.rotate(convertDistance(wheelRadius, 25), true);
-        rightMotor.rotate(convertDistance(wheelRadius, 25), false);
+        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 25), true);
+        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, 25), false);
         // turn 90 degrees clockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(convertAngle(wheelRadius, width, 90), true);
-        rightMotor.rotate(-convertAngle(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
+        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
         leftMotor.stop();
         rightMotor.stop();
-        return;
     }
 
 }

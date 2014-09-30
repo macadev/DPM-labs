@@ -19,7 +19,7 @@ public class Driver {
     private static final SensorPort usPort = SensorPort.S1;
 
     public static void main (String [] argv){
-        RConsole.openUSB(30000);
+        //RConsole.openUSB(30000);
 
         RConsole.println("Connected");
         UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
