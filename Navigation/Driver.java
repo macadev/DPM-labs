@@ -31,7 +31,10 @@ public class Driver {
         usPoller.start();
         odometer.start();
         odometryDisplay.start();
-        driveControl.start();
+
+
+        driveControl.travelTo(0,60);
+        driveControl.travelTo(60,0);
 
         while (Button.waitForAnyPress()!=Button.ID_ESCAPE){
             try {

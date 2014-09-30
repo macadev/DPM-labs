@@ -16,8 +16,10 @@ public class DriveControl extends Thread {
     private final static double ACCEPTABLE_ANGLE = 1.00;
     private final static double AGGEPTABLE_LINEAR = 1.00;
 
-    private boolean traverseOne = false;
-    private boolean traverseTwo = false;
+    private double currentXtarget;
+    private double currentYtarget;
+
+    Exception obstacleException = new Exception("Obstable too close");
 
     private boolean navigating = false;
     /**
@@ -36,23 +38,7 @@ public class DriveControl extends Thread {
         this.width = width;
     }
 
-    /**
-     * main runnable that drives the robot around
-     */
-    public void run(){
 
-//        travelTo(60, 30);
-//        travelTo(30, 30);
-//        travelTo(30, 60);
-//        travelTo(60, 0);
-
-
-
-        traverseOne = true;
-        travelTo(0,60);
-        traverseTwo = true;
-        travelTo(60,0);
-    }
 
     /**
      * Given a point (x,y), this method will move the robot to those coordinates
@@ -60,24 +46,31 @@ public class DriveControl extends Thread {
      * @param y y coordinate
      */
     public void travelTo(double x, double y){
+        currentXtarget = x;
+        currentYtarget = y;
+        try {
 
-        navigating = true;
-        double [] currentPosition = new double[3];
-        odometer.getPosition(currentPosition, new boolean[]{true, true, true});
+            navigating = true;
+            double[] currentPosition = new double[3];
+            odometer.getPosition(currentPosition, new boolean[]{true, true, true});
 
-        Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
+            Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
 
-        turnTo(vector.getOrientation());
+            turnTo(vector.getOrientation());
 
-        leftMotor.setSpeed(STRAIGHT_SPEED);
-        rightMotor.setSpeed(STRAIGHT_SPEED);
+            leftMotor.setSpeed(STRAIGHT_SPEED);
+            rightMotor.setSpeed(STRAIGHT_SPEED);
 
-        leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
-        rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), false);
-        navigating = false;
-        if (!closeEnough(x, y)){
-            RConsole.println("Not close enough, redo!");
-            travelTo(x,y);
+            leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
+            rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), false);
+            navigating = false;
+            if (!closeEnough(x, y)) {
+                RConsole.println("Not close enough, redo!");
+                travelTo(x, y);
+            }
+        }
+        catch (Exception e){
+          return;
         }
     }
 
@@ -180,11 +173,12 @@ public class DriveControl extends Thread {
         return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(ACCEPTABLE_ANGLE);
     }
 
-    public void avoidObstacleDetection(int distance) {
+    public void avoidObstacleDetection(int distance) throws Exception {
         if (distance < 15) {
             avoid();
-            if (traverseOne) travelTo(0,60);
-            else if (traverseTwo) travelTo(60,0);
+
+            throw obstacleException;
+
         }
     }
 
