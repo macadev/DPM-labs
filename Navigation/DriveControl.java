@@ -1,9 +1,6 @@
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-
 /**
  * Created by David on 14-09-25.
  * id. 260583602
@@ -203,8 +200,8 @@ public void run(){
         // turn 90 degrees clockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
-        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), true);
+        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
@@ -213,8 +210,8 @@ public void run(){
         // turn 90 degrees counterclockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
-        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), true);
+        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
@@ -223,8 +220,8 @@ public void run(){
         // turn 90 degrees counterclockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
-        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), true);
+        rightMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), false);
         // drive forward
         leftMotor.setSpeed(STRAIGHT_SPEED);
         rightMotor.setSpeed(STRAIGHT_SPEED);
@@ -233,8 +230,8 @@ public void run(){
         // turn 90 degrees clockwise
         leftMotor.setSpeed(TURN_SPEED);
         rightMotor.setSpeed(TURN_SPEED);
-        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90), true);
-        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, 90.0), false);
+        leftMotor.rotate(ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), true);
+        rightMotor.rotate(-ConversionUtilities.convertAngleToMotorRotation(wheelRadius, width, Math.PI/2), false);
         leftMotor.stop();
         rightMotor.stop();
     }
