@@ -11,12 +11,20 @@ public class DriveControlTest extends TestCase {
     public void testPolarDisplacement() throws Exception {
         double [] currentPosition;
         double [] destination;
-        
+
+
+
         currentPosition = new double[] {0, 0, 90};
-        destination = new double[] {1, 1};
+        destination = new double[] {0, 60};
         Vector vector = DriveControl.vectorDisplacement(currentPosition, destination);
-        Assert.assertEquals(Math.sqrt(2), vector.getMagnitude());
-        Assert.assertEquals(Math.PI/4.0, vector.getOrientation());
+        Assert.assertEquals(60.0, vector.getMagnitude());
+        Assert.assertEquals(Math.PI/2, vector.getOrientation());
+
+        currentPosition = new double[] {0, 60, 90};
+        destination = new double[] {60, 0};
+        vector = DriveControl.vectorDisplacement(currentPosition, destination);
+        Assert.assertEquals(Math.sqrt((60*60)+(60*60)), vector.getMagnitude());
+        Assert.assertEquals(-Math.PI/4, vector.getOrientation());
 
         currentPosition = new double[] {1, 1, 90};
         destination = new double[] {0, 0};

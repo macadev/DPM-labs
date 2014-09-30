@@ -19,7 +19,7 @@ public class Driver {
     private static final SensorPort usPort = SensorPort.S1;
 
     public static void main (String [] argv){
-        //RConsole.openUSB(30000);
+        RConsole.openUSB(30000);
 
         RConsole.println("Connected");
         UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
@@ -32,9 +32,7 @@ public class Driver {
         odometer.start();
         odometryDisplay.start();
 
-
-        driveControl.travelTo(0,60);
-        driveControl.travelTo(60,0);
+        driveControl.start();
 
         while (Button.waitForAnyPress()!=Button.ID_ESCAPE){
             try {

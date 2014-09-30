@@ -38,7 +38,14 @@ public class DriveControl extends Thread {
         this.width = width;
     }
 
+public void run(){
 
+    travelTo(0, 60);
+    RConsole.println("Finished first move");
+    travelTo(60, 0);
+    RConsole.println("Finished second move");
+
+}
 
     /**
      * Given a point (x,y), this method will move the robot to those coordinates
@@ -56,6 +63,8 @@ public class DriveControl extends Thread {
 
             Vector vector = vectorDisplacement(currentPosition, new double[]{x, y});
 
+            RConsole.println("Magnitude: " + String.valueOf(vector.getMagnitude()));
+            RConsole.println("Orientation: " + String.valueOf(vector.getOrientation()));
             turnTo(vector.getOrientation());
 
             leftMotor.setSpeed(STRAIGHT_SPEED);
@@ -143,7 +152,7 @@ public class DriveControl extends Thread {
             double x = destination[0] - currentPosition[0];
             double y = destination[1] - currentPosition[1];
 
-            if (x>0) {
+            if (x>=0) {
                 vector.setOrientation(Math.atan((y) / (x)));
             } else if (x<0 && y>0){
                 vector.setOrientation(Math.atan((y) / (x)) + Math.PI);
