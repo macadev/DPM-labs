@@ -49,7 +49,7 @@ public class Lab2 {
 			odometryDisplay.start();
 			odometryCorrection.start();
 
-			// spawn a new Thread to avoid SquareDriver.drive() from blocking
+			// spawn a new Thread to goAround SquareDriver.drive() from blocking
 			(new Thread() {
 				public void run() {
 					SquareDriver.drive(Motor.A, Motor.B, WHEEL_RADIUS, WHEEL_RADIUS, WHEEL_DISTANCE);

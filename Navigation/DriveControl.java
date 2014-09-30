@@ -1,6 +1,9 @@
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+
 /**
  * Created by David on 14-09-25.
  * id. 260583602
@@ -9,6 +12,7 @@ public class DriveControl extends Thread {
     private Odometer odometer;
     private NXTRegulatedMotor leftMotor, rightMotor;
     private double wheelRadius, width;
+    private UltrasonicSensor ultrasonicPoller;
 
     private final int TURN_SPEED = 150;
     private final int STRAIGHT_SPEED = 200;
@@ -19,9 +23,6 @@ public class DriveControl extends Thread {
     private double currentXtarget;
     private double currentYtarget;
 
-    Exception obstacleException = new Exception("Obstable too close");
-
-    private boolean navigating = false;
     /**
      * default constructor
      * @param odometer Odometer object
@@ -30,12 +31,13 @@ public class DriveControl extends Thread {
      * @param width with of the wheel space
      * @param wheelRadius radius of each wheel
      */
-    public DriveControl(Odometer odometer, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width, double wheelRadius){
+    public DriveControl(Odometer odometer, UltrasonicSensor ultrasonicPoller, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width, double wheelRadius){
         this.odometer=odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.wheelRadius = wheelRadius;
         this.width = width;
+        this.ultrasonicPoller = ultrasonicPoller;
     }
 
 public void run(){
@@ -57,7 +59,6 @@ public void run(){
         currentYtarget = y;
         try {
 
-            navigating = true;
             double[] currentPosition = new double[3];
             odometer.getPosition(currentPosition, new boolean[]{true, true, true});
 
@@ -71,8 +72,13 @@ public void run(){
             rightMotor.setSpeed(STRAIGHT_SPEED);
 
             leftMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
-            rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), false);
-            navigating = false;
+            rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
+
+            while(isNavigating()){
+                avoidObstacleDetection(ultrasonicPoller.getDistance());
+            }
+
+
             if (!closeEnough(x, y)) {
                 RConsole.println("Not close enough, redo!");
                 travelTo(x, y);
@@ -89,7 +95,7 @@ public void run(){
      */
     public void turnTo(double theta){
 
-        navigating =true;
+
 
         //implementation of slide 13 in navigation tutorial
         double thetaCurrent = odometer.getTheta();
@@ -103,12 +109,13 @@ public void run(){
         leftMotor.rotate(-angle, true);
         rightMotor.rotate(angle, false);
 
-        navigating = false;
+
         if (!closeEnough(theta)){
             RConsole.println("Not close enough, redo!");
             turnTo(theta);
         }
     }
+
 
     /**
      * Check if the robot is travelling
@@ -116,7 +123,8 @@ public void run(){
      */
     public boolean isNavigating(){
 
-        return navigating;
+        return leftMotor.isMoving() || rightMotor.isMoving();
+
 
     }
 
@@ -182,16 +190,13 @@ public void run(){
         return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(ACCEPTABLE_ANGLE);
     }
 
-    public void avoidObstacleDetection(int distance) throws Exception {
+    public void avoidObstacleDetection(int distance) {
         if (distance < 15) {
-            avoid();
-
-            throw obstacleException;
-
+            goAround();
         }
     }
 
-    public void avoid() {
+    public void goAround() {
         leftMotor.stop();
         rightMotor.stop();
         //Rotations:
