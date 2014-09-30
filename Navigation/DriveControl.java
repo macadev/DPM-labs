@@ -11,6 +11,8 @@ public class DriveControl extends Thread {
     private double wheelRadius, width;
     private UltrasonicSensor ultrasonicPoller;
 
+    private final int OBSTABLE_DISTANCE = 15;
+
     private final int TURN_SPEED = 150;
     private final int STRAIGHT_SPEED = 200;
 
@@ -36,15 +38,6 @@ public class DriveControl extends Thread {
         this.width = width;
         this.ultrasonicPoller = ultrasonicPoller;
     }
-
-public void run(){
-
-    travelTo(0, 60);
-    RConsole.println("Finished first move");
-    travelTo(60, 0);
-    RConsole.println("Finished second move");
-
-}
 
     /**
      * Given a point (x,y), this method will move the robot to those coordinates
@@ -72,7 +65,7 @@ public void run(){
             rightMotor.rotate(ConversionUtilities.convertDistanceToMotorRotation(wheelRadius, vector.getMagnitude()), true);
 
             while(isNavigating()){
-                avoidObstacleDetection(ultrasonicPoller.getDistance());
+                avoidObstacleDetection(OBSTABLE_DISTANCE);
             }
 
 
@@ -187,12 +180,22 @@ public void run(){
         return Math.abs(theta - odometer.getTheta()) <= Math.toDegrees(ACCEPTABLE_ANGLE);
     }
 
+    /**
+     * check if the robot faces an obstacle
+     * @param distance distance at which we consider there is an obstacle
+     */
     public void avoidObstacleDetection(int distance) {
-        if (distance < 15) {
+
+        if (ultrasonicPoller.getDistance() < distance) {
             goAround();
         }
     }
 
+    /**
+     * drive in a square around the objet
+     *
+     * TODO: Implement better obstable avoidance tactic
+     */
     public void goAround() {
         leftMotor.stop();
         rightMotor.stop();

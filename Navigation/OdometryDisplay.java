@@ -1,25 +1,24 @@
 /*
  * OdometryDisplay.java
  */
-import lejos.nxt.ColorSensor;
 import lejos.nxt.LCD;
 
+/**
+ * Class displaying the current telemetry to the LCD screen
+ */
 public class OdometryDisplay extends Thread {
 	private static final long DISPLAY_PERIOD = 250;
 	private Odometer odometer;
-    private OdometryCorrection odometryCorrection;
 
-	// constructor
-    public OdometryDisplay(Odometer odometer, OdometryCorrection odometryCorrection) {
-        this.odometer = odometer;
-        this.odometryCorrection = odometryCorrection;
-    }
     public OdometryDisplay(Odometer odometer) {
         this.odometer = odometer;
-        this.odometryCorrection = null;
     }
 
 	// run method (required for Thread)
+
+    /**
+     * Display the current telemetry to the lcd
+     */
 	public void run() {
 		long displayStart, displayEnd;
 		double[] position = new double[3];
@@ -38,12 +37,6 @@ public class OdometryDisplay extends Thread {
 			// get the odometry information
 			odometer.getPosition(position, new boolean[] { true, true, true });
 
-            if (odometryCorrection!=null) {
-                LCD.drawString("Light:          ", 0, 3);
-                LCD.drawString("Count:          ", 0, 4);
-                LCD.drawString(String.valueOf(odometryCorrection.getLight()), 7, 3);
-                LCD.drawString(String.valueOf(odometryCorrection.getLineCount()), 7, 4);
-            }
             // display odometry information
 			for (int i = 0; i < 2; i++) {
 				LCD.drawString(formattedDoubleToString(position[i], 2), 3, i);
@@ -63,7 +56,13 @@ public class OdometryDisplay extends Thread {
 			}
 		}
 	}
-	
+
+    /**
+     * Formats a double to a nice string
+     * @param x the double to format
+     * @param places the number of trailling digits
+     * @return the double as a string with the correct number of digits
+     */
 	private static String formattedDoubleToString(double x, int places) {
 		String result = "";
 		String stack = "";

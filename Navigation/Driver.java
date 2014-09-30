@@ -1,73 +1,60 @@
-import lejos.nxt.Button;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.comm.RConsole;
-import lejos.nxt.*;
+import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 
 /**
- * Lab3 main executable
+ * This class drives the robot around following a specified path
  *
  * @author David id. 260583602
  */
-public class Driver {
+public class Driver extends Thread{
 
+    public static enum AvailablePath {PART_A, PART_B}
+    private AvailablePath choice;
+
+    //Drive system parameters
     private static double WHEEL_RADIUS = 2.1;
     private static double WHEEL_DISTANCE = 15;
 
+    //NXT Components
     private static NXTRegulatedMotor leftMotor = Motor.A;
     private static NXTRegulatedMotor rightMotor = Motor.B;
     private static final SensorPort usPort = SensorPort.S1;
 
-    public static void main (String [] argv){
-        //RConsole.openUSB(30000);
+    /**
+     * Default constructor
+     * @param availablepaths Requires the type of path to run
+     */
+    public Driver (AvailablePath availablepaths){
+        choice = availablepaths;
+    }
 
-        RConsole.println("Connected");
+    /**
+     * Executable method
+     */
+    public void run(){
+
         UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
         Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
         OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
         DriveControl driveControl = new DriveControl(odometer, usSensor, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS);
 
-        int buttonChoice;
-
         odometer.start();
-        do {
-            // clear the display
-            LCD.clear();
+        odometryDisplay.start();
 
-            // ask the user whether the motors should drive in a square or float
-            LCD.drawString("< Left | Right >", 0, 0);
-            LCD.drawString("       |        ", 0, 1);
-            LCD.drawString(" Part  |  Part  ", 0, 2);
-            LCD.drawString("   A   |    B   ", 0, 3);
-            LCD.drawString("       |        ", 0, 4);
 
-            buttonChoice = Button.waitForAnyPress();
-        } while (buttonChoice != Button.ID_LEFT
-                && buttonChoice != Button.ID_RIGHT);
-
-        if (buttonChoice == Button.ID_LEFT) {
-            odometryDisplay.start();
-
+        if (choice == AvailablePath.PART_A){
             driveControl.travelTo(60, 30);
             driveControl.travelTo(30, 30);
             driveControl.travelTo(30, 60);
             driveControl.travelTo(60, 0);
-        } else {
-            odometryDisplay.start();
-
+        }
+        else if (choice == AvailablePath.PART_B){
             driveControl.travelTo(0, 60);
-            RConsole.println("Finished first move");
             driveControl.travelTo(60, 0);
-            RConsole.println("Finished second move");
-        }
 
-        while (Button.waitForAnyPress()!=Button.ID_ESCAPE){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
-        System.exit(0);
     }
+
 }
