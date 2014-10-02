@@ -1,3 +1,5 @@
+import dpm.lejos.Lab2Code.Odometer;
+
 /**
  * Created by David on 14-09-26.
  * id. 260583602
