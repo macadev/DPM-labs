@@ -86,7 +86,14 @@ public class TwoWheeledRobot extends ConversionUtilities{
 		data[1] = (leftTacho * wheelRadius - rightTacho * wheelRadius) / width;
 	}
 	
-	// mutators
+	// float both motors
+	public void setFloat() {
+		this.leftMotor.stop();
+		this.rightMotor.stop();
+		this.leftMotor.flt(true);
+		this.rightMotor.flt(true);
+	}
+
 	public void setForwardSpeed(double speed) {
 		forwardSpeed = speed;
 		setSpeeds(forwardSpeed, rotationSpeed);
@@ -135,4 +142,7 @@ public class TwoWheeledRobot extends ConversionUtilities{
 			rightMotor.setSpeed((int)rightSpeed);
 	}
 
+	public NXTRegulatedMotor[] getMotors() {
+		return new NXTRegulatedMotor[]{ leftMotor, rightMotor };
+	}
 }

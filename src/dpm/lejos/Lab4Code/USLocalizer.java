@@ -51,7 +51,7 @@ public class USLocalizer {
                 //indeed facing away from the wall
                 robot.setSpeeds(0,ROTATION_SPEED);
                 robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
-                robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+                robot.rightMotor.rotate(-robot.convertAngleToMotorRotation(2*Math.PI), true);
 
                 while (average(usMovingFilter) > WALL_THRESHOLD){
                     usMovingFilter.remove(0);
@@ -61,7 +61,7 @@ public class USLocalizer {
                 robot.stop();
 
                 angleA = odometer.getTheta();
-                robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+                robot.leftMotor.rotate(-robot.convertAngleToMotorRotation(2*Math.PI), true);
                 robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
 
                 while (average(usMovingFilter) < WALL_THRESHOLD){
