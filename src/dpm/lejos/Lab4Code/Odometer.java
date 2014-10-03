@@ -9,7 +9,7 @@ public class Odometer implements TimerListener {
 	private Timer odometerTimer;
 	private Navigation nav;
 	// position data
-	private Object lock;
+	private final Object lock;
 	private double x, y, theta;
 	private double [] oldDH, dDH;
 	
@@ -68,8 +68,26 @@ public class Odometer implements TimerListener {
 			pos[2] = theta;
 		}
 	}
-	
-	public TwoWheeledRobot getTwoWheeledRobot() {
+
+    public double getTheta(){
+        synchronized (lock) {
+            return theta;
+        }
+    }
+
+    public double getX() {
+        synchronized (lock) {
+            return x;
+        }
+    }
+
+    public double getY() {
+        synchronized (lock) {
+            return y;
+        }
+    }
+
+    public TwoWheeledRobot getTwoWheeledRobot() {
 		return robot;
 	}
 	
@@ -85,8 +103,14 @@ public class Odometer implements TimerListener {
 			if (update[2]) theta = pos[2];
 		}
 	}
-	
-	// static 'helper' methods
+
+    public void setTheta(double theta) {
+        synchronized (lock) {
+            this.theta = theta;
+        }
+    }
+
+    // static 'helper' methods
 	public static double fixDegAngle(double angle) {		
 		if (angle < 0.0)
 			angle = 360.0 + (angle % 360.0);

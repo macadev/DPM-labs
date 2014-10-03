@@ -1,6 +1,7 @@
 package dpm.lejos.Lab3Code;
 
 import dpm.lejos.Lab2Code.Odometer;
+import dpm.lejos.Lab4Code.TwoWheeledRobot;
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 
@@ -8,11 +9,12 @@ import lejos.nxt.comm.RConsole;
  * Created by David on 14-09-25.
  * id. 260583602
  */
-public class DriveControl extends Thread {
+public class Navigation extends Thread {
     private Odometer odometer;
     private NXTRegulatedMotor leftMotor, rightMotor;
     private double wheelRadius, width;
     private UltrasonicSensor ultrasonicPoller;
+    private TwoWheeledRobot robot;
 
     private final int OBSTABLE_DISTANCE = 15;
 
@@ -22,9 +24,6 @@ public class DriveControl extends Thread {
     private final static double ACCEPTABLE_ANGLE = 1.00;
     private final static double AGGEPTABLE_LINEAR = 1.00;
 
-    private double currentXtarget;
-    private double currentYtarget;
-
     /**
      * default constructor
      * @param odometer Odometer object
@@ -33,7 +32,7 @@ public class DriveControl extends Thread {
      * @param width with of the wheel space
      * @param wheelRadius radius of each wheel
      */
-    public DriveControl(Odometer odometer, UltrasonicSensor ultrasonicPoller, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width, double wheelRadius){
+    public Navigation(Odometer odometer, UltrasonicSensor ultrasonicPoller, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width, double wheelRadius){
         this.odometer=odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
@@ -48,8 +47,6 @@ public class DriveControl extends Thread {
      * @param y y coordinate
      */
     public void travelTo(double x, double y){
-        currentXtarget = x;
-        currentYtarget = y;
         try {
 
             double[] currentPosition = new double[3];

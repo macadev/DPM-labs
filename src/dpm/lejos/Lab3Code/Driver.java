@@ -42,7 +42,7 @@ public class Driver extends Thread{
         UltrasonicSensor usSensor = new UltrasonicSensor(usPort);
         Odometer odometer = new Odometer(WHEEL_RADIUS, WHEEL_DISTANCE);
         OdometryDisplay odometryDisplay = new OdometryDisplay(odometer);
-        DriveControl driveControl = new DriveControl(odometer, usSensor, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS);
+        Navigation driveControl = new Navigation(odometer, usSensor, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS);
 
         odometer.start();
         odometryDisplay.start();

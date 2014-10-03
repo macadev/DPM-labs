@@ -2,17 +2,23 @@ package dpm.lejos.Lab4Code;
 
 import lejos.nxt.UltrasonicSensor;
 
-public class USLocalizer {
-	public enum LocalizationType { FALLING_EDGE, RISING_EDGE };
-	public static double ROTATION_SPEED = 30;
+import java.util.LinkedList;
 
-	private Odometer odo;
+public class USLocalizer {
+	public enum LocalizationType { FALLING_EDGE, RISING_EDGE }
+	public static double ROTATION_SPEED = 60;
+    private static int US_MOVING_AVERAGE_SIZE = 3;
+    private static double WALL_THRESHOLD = 40; //TODO: Value to change
+
+	private Odometer odometer;
 	private TwoWheeledRobot robot;
 	private UltrasonicSensor us;
 	private LocalizationType locType;
+
+    private LinkedList<Integer> usMovingFilter = new LinkedList<Integer>();
 	
 	public USLocalizer(Odometer odo, UltrasonicSensor us, LocalizationType locType) {
-		this.odo = odo;
+		this.odometer = odo;
 		this.robot = odo.getTwoWheeledRobot();
 		this.us = us;
 		this.locType = locType;
@@ -20,37 +26,103 @@ public class USLocalizer {
 		// switch off the ultrasonic sensor
 		us.off();
 	}
-	
+    public static int sum (LinkedList < Integer > list) {
+        int sum =0;
+        for(int x:list){
+            sum += x;
+        }
+        return sum;
+    }
+    public static double average (LinkedList<Integer> list){
+        return sum(list)/(double)list.size();
+    }
+
 	public void doLocalization() {
-		double [] pos = new double [3];
 		double angleA, angleB;
-		
-		if (locType == LocalizationType.FALLING_EDGE) {
-			// rotate the robot until it sees no wall
-			
-			// keep rotating until the robot sees a wall, then latch the angle
-			
-			// switch direction and wait until it sees no wall
-			
-			// keep rotating until the robot sees a wall, then latch the angle
-			
-			// angleA is clockwise from angleB, so assume the average of the
-			// angles to the right of angleB is 45 degrees past 'north'
-			
-			// update the odometer position (example to follow:)
-			odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
+        for (int i = 0; i<US_MOVING_AVERAGE_SIZE; i++){
+            usMovingFilter.add(getFilteredData());
+        }
+
+        if (locType == LocalizationType.FALLING_EDGE) {
+            //we are facing away from the wall
+
+
+            if (average(usMovingFilter) > WALL_THRESHOLD){
+                //indeed facing away from the wall
+                robot.setSpeeds(0,ROTATION_SPEED);
+                robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+                robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+
+                while (average(usMovingFilter) > WALL_THRESHOLD){
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+
+                robot.stop();
+
+                angleA = odometer.getTheta();
+                robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+                robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
+
+                while (average(usMovingFilter) < WALL_THRESHOLD){
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+
+                while (average(usMovingFilter) > WALL_THRESHOLD){
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+                robot.stop();
+                angleB = odometer.getTheta();
+
+            } else {
+                locType = LocalizationType.RISING_EDGE;
+                doLocalization();
+                return;
+            }
+
 		} else {
-			/*
-			 * The robot should turn until it sees the wall, then look for the
-			 * "rising edges:" the points where it no longer sees the wall.
-			 * This is very similar to the FALLING_EDGE routine, but the robot
-			 * will face toward the wall for most of it.
-			 */
-			
-			//
-			// FILL THIS IN
-			//
-		}
+            if (average(usMovingFilter) < WALL_THRESHOLD) {
+                //indeed facing the wall
+                robot.setSpeeds(0, ROTATION_SPEED);
+                robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2 * Math.PI), true);
+                robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2 * Math.PI), true);
+
+                while (average(usMovingFilter) > WALL_THRESHOLD) {
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+
+                robot.stop();
+
+                angleA = odometer.getTheta();
+                robot.leftMotor.rotate(robot.convertAngleToMotorRotation(2 * Math.PI), true);
+                robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2 * Math.PI), true);
+
+                while (average(usMovingFilter) > WALL_THRESHOLD) {
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+
+                while (average(usMovingFilter) < WALL_THRESHOLD) {
+                    usMovingFilter.remove(0);
+                    usMovingFilter.add(getFilteredData());
+                }
+                robot.stop();
+                angleB = odometer.getTheta();
+
+            } else {
+                locType = LocalizationType.FALLING_EDGE;
+                doLocalization();
+                return;
+            }
+        }
+
+
+        double deltaTheta = angleA < angleB ? 45-(angleA+angleB)/2 : 225-(angleA+angleB)/2; //TODO: 45, 225 should be determined experimentally
+        odometer.setTheta(odometer.getTheta()+deltaTheta);
+
 	}
 	
 	private int getFilteredData() {
@@ -60,7 +132,7 @@ public class USLocalizer {
 		us.ping();
 		
 		// wait for the ping to complete
-		try { Thread.sleep(50); } catch (InterruptedException e) {}
+		try { Thread.sleep(50); } catch (InterruptedException e) {e.printStackTrace();}
 		
 		// there will be a delay here
 		distance = us.getDistance();

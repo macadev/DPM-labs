@@ -1,45 +1,80 @@
 package dpm.lejos.Lab4Code;
 
+import dpm.lejos.Lab3Code.ConversionUtilities;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.UltrasonicSensor;
 
-public class TwoWheeledRobot {
-	public static final double DEFAULT_LEFT_RADIUS = 2.75;
-	public static final double DEFAULT_RIGHT_RADIUS = 2.75;
+public class TwoWheeledRobot extends ConversionUtilities{
+	public static final double DEFAULT_WHEEL_RADIUS = 2.75;
 	public static final double DEFAULT_WIDTH = 15.8;
-	private NXTRegulatedMotor leftMotor, rightMotor;
-	private double leftRadius, rightRadius, width;
+	public NXTRegulatedMotor leftMotor, rightMotor;
+	private double wheelRadius, width;
 	private double forwardSpeed, rotationSpeed;
-	
+	public UltrasonicSensor us;
+
 	public TwoWheeledRobot(NXTRegulatedMotor leftMotor,
 						   NXTRegulatedMotor rightMotor,
 						   double width,
-						   double leftRadius,
-						   double rightRadius) {
+						   double wheelRadius) {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
-		this.leftRadius = leftRadius;
-		this.rightRadius = rightRadius;
+		this.wheelRadius = wheelRadius;
 		this.width = width;
 	}
-	
-	public TwoWheeledRobot(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
-		this(leftMotor, rightMotor, DEFAULT_WIDTH, DEFAULT_LEFT_RADIUS, DEFAULT_RIGHT_RADIUS);
-	}
+
+    public TwoWheeledRobot(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
+        this(leftMotor, rightMotor, DEFAULT_WIDTH, DEFAULT_WHEEL_RADIUS);
+    }
+    public TwoWheeledRobot(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, UltrasonicSensor us) {
+        this(leftMotor, rightMotor, DEFAULT_WIDTH, DEFAULT_WHEEL_RADIUS);
+        this.us = us;
+    }
 	
 	public TwoWheeledRobot(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width) {
-		this(leftMotor, rightMotor, width, DEFAULT_LEFT_RADIUS, DEFAULT_RIGHT_RADIUS);
+		this(leftMotor, rightMotor, width, DEFAULT_WHEEL_RADIUS);
 	}
-	
+    
+    public int convertDistanceToMotorRotation (double distance){
+        return (int) ((180.0 * distance) / (Math.PI * wheelRadius));
+    }
+
+    public double getWheelRadius(){
+        return this.wheelRadius;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public int convertAngleToMotorRotation (double angle){
+        return convertDistanceToMotorRotation(wheelRadius, width * angle / 2);
+    }
+
+    /**
+     * Check if the robot is travelling
+     * @return is the robot travelling
+     */
+    public boolean isNavigating(){
+
+        return leftMotor.isMoving() || rightMotor.isMoving();
+
+
+    }
+
+    public void stop(){
+        leftMotor.stop();
+        rightMotor.stop();
+    }
 	// accessors
 	public double getDisplacement() {
-		return (leftMotor.getTachoCount() * leftRadius +
-				rightMotor.getTachoCount() * rightRadius) *
+		return (leftMotor.getTachoCount() * wheelRadius +
+				rightMotor.getTachoCount() * wheelRadius) *
 				Math.PI / 360.0;
 	}
 	
 	public double getHeading() {
-		return (leftMotor.getTachoCount() * leftRadius -
-				rightMotor.getTachoCount() * rightRadius) / width;
+		return (leftMotor.getTachoCount() * wheelRadius -
+				rightMotor.getTachoCount() * wheelRadius) / width;
 	}
 	
 	public void getDisplacementAndHeading(double [] data) {
@@ -47,8 +82,8 @@ public class TwoWheeledRobot {
 		leftTacho = leftMotor.getTachoCount();
 		rightTacho = rightMotor.getTachoCount();
 		
-		data[0] = (leftTacho * leftRadius + rightTacho * rightRadius) *	Math.PI / 360.0;
-		data[1] = (leftTacho * leftRadius - rightTacho * rightRadius) / width;
+		data[0] = (leftTacho * wheelRadius + rightTacho * wheelRadius) *	Math.PI / 360.0;
+		data[1] = (leftTacho * wheelRadius - rightTacho * wheelRadius) / width;
 	}
 	
 	// mutators
@@ -69,9 +104,9 @@ public class TwoWheeledRobot {
 		this.rotationSpeed = rotationalSpeed; 
 
 		leftSpeed = (forwardSpeed + rotationalSpeed * width * Math.PI / 360.0) *
-				180.0 / (leftRadius * Math.PI);
+				180.0 / (wheelRadius * Math.PI);
 		rightSpeed = (forwardSpeed - rotationalSpeed * width * Math.PI / 360.0) *
-				180.0 / (rightRadius * Math.PI);
+				180.0 / (wheelRadius * Math.PI);
 
 		// set motor directions
 		if (leftSpeed > 0.0)
@@ -99,4 +134,5 @@ public class TwoWheeledRobot {
 		else
 			rightMotor.setSpeed((int)rightSpeed);
 	}
+
 }
