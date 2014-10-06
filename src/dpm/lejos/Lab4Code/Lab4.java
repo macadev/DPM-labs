@@ -16,8 +16,8 @@ public class Lab4 {
 		usl.doLocalization();
 		
 		// perform the light sensor localization
-		//LightLocalizer lsl = new LightLocalizer(odo, ls);
-		//lsl.doLocalization();
+		LightLocalizer lsl = new LightLocalizer(odo, ls);
+		lsl.doLocalization();
 		
 		Button.waitForAnyPress();
 	}
