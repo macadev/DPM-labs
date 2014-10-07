@@ -1,6 +1,8 @@
 package dpm.lejos.Lab4Code;
 
+import lejos.nxt.LCD;
 import lejos.nxt.UltrasonicSensor;
+import lejos.nxt.comm.RConsole;
 
 import java.util.LinkedList;
 
@@ -61,6 +63,10 @@ public class USLocalizer {
                 robot.stop();
 
                 angleA = odometer.getTheta();
+                LCDInfo.printAngleA(angleA);
+
+                RConsole.println("AngleA"+String.valueOf(angleA));
+
                 robot.leftMotor.rotate(-robot.convertAngleToMotorRotation(2*Math.PI), true);
                 robot.rightMotor.rotate(robot.convertAngleToMotorRotation(2*Math.PI), true);
 
@@ -75,6 +81,9 @@ public class USLocalizer {
                 }
                 robot.stop();
                 angleB = odometer.getTheta();
+                RConsole.println("AngleB"+String.valueOf(angleB));
+
+                LCDInfo.printAngleB(angleB);
 
             } else {
                 locType = LocalizationType.RISING_EDGE;
@@ -120,9 +129,9 @@ public class USLocalizer {
         }
 
 
-        double deltaTheta = angleA < angleB ? 45-(angleA+angleB)/2 : 225-(angleA+angleB)/2; //TODO: 45, 225 should be determined experimentally
+        double deltaTheta = angleA < angleB ? 571-(angleA+angleB)/2 : 225-(angleA+angleB)/2; //TODO: 45, 225 should be determined experimentally
         odometer.setTheta(odometer.getTheta()+deltaTheta);
-
+        RConsole.println("deltaTheta: "+String.valueOf(deltaTheta));
 	}
 	
 	private int getFilteredData() {

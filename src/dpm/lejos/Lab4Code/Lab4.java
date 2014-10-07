@@ -1,11 +1,14 @@
 package dpm.lejos.Lab4Code;
 
 import lejos.nxt.*;
+import lejos.nxt.comm.RConsole;
 
 public class Lab4 {
 
 	public static void main(String[] args) {
-		// setup the odometer, display, and ultrasonic and light sensors
+        RConsole.openUSB(10000);
+        RConsole.println("connected");
+        // setup the odometer, display, and ultrasonic and light sensors
 		TwoWheeledRobot patBot = new TwoWheeledRobot(Motor.A, Motor.B);
 		Odometer odo = new Odometer(patBot, true);
 		LCDInfo lcd = new LCDInfo(odo);
@@ -16,8 +19,8 @@ public class Lab4 {
 		usl.doLocalization();
 		
 		// perform the light sensor localization
-		LightLocalizer lsl = new LightLocalizer(odo, ls);
-		lsl.doLocalization();
+		//LightLocalizer lsl = new LightLocalizer(odo, ls);
+		//lsl.doLocalization();
 		
 		Button.waitForAnyPress();
 	}

@@ -4,6 +4,7 @@ package dpm.lejos.Lab2Code;
  * Odometer.java
  */
 
+import dpm.lejos.Lab4Code.TwoWheeledRobot;
 import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.comm.RConsole;
@@ -26,6 +27,7 @@ public class Odometer extends Thread {
 	// lock object for mutual exclusion
 	private final Object lock;
 
+    private TwoWheeledRobot robot=null;
 	// default constructor
 
     /**
@@ -53,6 +55,15 @@ public class Odometer extends Thread {
         Motor.B.resetTachoCount();
         prevTachoL = 0;
         prevTachoR = 0;
+    }
+
+    public Odometer(TwoWheeledRobot robot, boolean start) {
+        this(robot.getWheelRadius(), robot.getWidth());
+        this.robot=robot;
+    }
+
+    public TwoWheeledRobot getTwoWheeledRobot(){
+        return robot;
     }
 
     /**

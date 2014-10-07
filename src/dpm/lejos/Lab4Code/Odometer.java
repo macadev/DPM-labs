@@ -1,5 +1,6 @@
 package dpm.lejos.Lab4Code;
 
+import lejos.nxt.comm.RConsole;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
 
@@ -111,7 +112,8 @@ public class Odometer implements TimerListener {
     }
 
     // static 'helper' methods
-	public static double fixDegAngle(double angle) {		
+	public static double fixDegAngle(double angle) {
+        RConsole.println("realAngle: "+String.valueOf(angle));
 		if (angle < 0.0)
 			angle = 360.0 + (angle % 360.0);
 		

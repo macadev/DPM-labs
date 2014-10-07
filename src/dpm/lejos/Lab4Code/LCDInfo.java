@@ -8,8 +8,10 @@ public class LCDInfo implements TimerListener{
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
 	private Timer lcdTimer;
-	
-	// arrays for displaying data
+    private static double angleA = 0;
+    private static double angleB = 0;
+
+    // arrays for displaying data
 	private double [] pos;
 	
 	public LCDInfo(Odometer odo) {
@@ -32,5 +34,15 @@ public class LCDInfo implements TimerListener{
 		LCD.drawInt((int)(pos[0] * 10), 3, 0);
 		LCD.drawInt((int)(pos[1] * 10), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
-	}
+        if (angleA!=0)LCD.drawString("AngleA: "+String.valueOf(angleA), 0, 4);
+        if (angleB!=0)LCD.drawString("AngleB: "+String.valueOf(angleB), 0, 5);
+
+    }
+    public static void printAngleA(double newAngleA){
+        angleA = newAngleA;
+    }
+
+    public static void printAngleB(double newAngleB){
+        angleB = newAngleB;
+    }
 }
