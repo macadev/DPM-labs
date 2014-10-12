@@ -1,6 +1,24 @@
+package dpm.lejos.Lab5Code;
+
 /**
- * Created by danielmacario on 2014-10-11.
+ * Four possible cardinal points
+ * @author Daniel Macario
  */
 public enum Direction {
-    NORTH, SOUTH, EAST, WEST
+    /**
+     * Facing north
+     */
+    NORTH,
+    /**
+     * Facing south
+     */
+    SOUTH,
+    /**
+     * Facing east
+     */
+    EAST,
+    /**
+     * facing west
+     */
+    WEST
 }

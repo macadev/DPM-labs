@@ -1,3 +1,5 @@
+package dpm.lejos.Lab5Code;
+
 //tiles on the grid, use for representing the plane.
 public class Tile {
 

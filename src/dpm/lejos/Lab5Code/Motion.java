@@ -1,9 +1,16 @@
-/**
- * Created by danielmacario on 2014-10-11.
- */
+package dpm.lejos.Lab5Code;
 
-//rotate means 90 degree counter-clockwise
-//Forward means travel to the next tile in the current direction
+/**
+ * Possible movements
+ * @author Daniel Macario
+ */
 public enum Motion {
-    ROTATE, FORWARD
+    /**
+     * rotate 90 degree counter-clockwise
+     */
+    ROTATE,
+    /**
+     * Travel to the next tile in the current direction
+     */
+    FORWARD
 }

@@ -1,8 +1,11 @@
+package dpm.lejos.Lab5Code;
+
 import java.util.ArrayList;
-import java.util.Queue;
 
 /**
- * Created by danielmacario on 2014-10-11.
+ *
+ * @author Daniel Macario
+ * @version 1.0
  */
 public class DeterministicLocalization {
 
@@ -11,7 +14,7 @@ public class DeterministicLocalization {
         int x = 2;
         int y = 1;
         Direction dir = Direction.SOUTH;
-        VirtualRobot vrt = new VirtualRobot(y,x,Direction.SOUTH);
+        VirtualRobot vrt = new VirtualRobot(x,y,Direction.SOUTH);
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
 //        System.out.println(1);
@@ -61,10 +64,10 @@ public class DeterministicLocalization {
                         }
                     }
 
-                    if (plane[vr.x][vr.y].hasObstacle(vr.dir) && obs == Obstacle.OBSTACLE) {
+                    if (plane[vr.getX()][vr.getY()].hasObstacle(vr.getDir()) && obs == Obstacle.OBSTACLE) {
                         //stays true
                     } else {
-                        plane[vr.x][vr.y].setDirectionToFalse(vr.dir);
+                        plane[vr.getX()][vr.getY()].setDirectionToFalse(vr.getDir());
                     }
 
                 }
@@ -148,7 +151,7 @@ public class DeterministicLocalization {
         {
             for(int j = 0; j < 4; j++)
             {
-                System.out.printf(String.valueOf(plane[i][j].obstacleN) + "  ");
+                System.out.println(String.valueOf(plane[i][j].obstacleN) + "  ");
             }
             System.out.println();
         }

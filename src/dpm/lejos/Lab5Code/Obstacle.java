@@ -1,6 +1,16 @@
+package dpm.lejos.Lab5Code;
+
 /**
- * Created by danielmacario on 2014-10-11.
+ * Possible state at the current heading
+ * @author Daniel Macario
  */
 public enum Obstacle {
-    OBSTACLE, CLEAR
+    /**
+     * Obstacle present at current position and heading
+     */
+    OBSTACLE,
+    /**
+     * No obstacle present at current position and heading
+     */
+    CLEAR
 }
