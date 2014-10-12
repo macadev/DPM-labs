@@ -79,11 +79,11 @@ public class DeterministicLocalization {
         int posCount = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if (!plane[i][j].isObstacle) {
-                    if (plane[i][j].possibleN) posCount++;
-                    if (plane[i][j].possibleS) posCount++;
-                    if (plane[i][j].possibleW) posCount++;
-                    if (plane[i][j].possibleE) posCount++;
+                if (!plane[i][j].isObstacle()) {
+                    if (plane[i][j].getPossible(Direction.NORTH)) posCount++;
+                    if (plane[i][j].getPossible(Direction.SOUTH)) posCount++;
+                    if (plane[i][j].getPossible(Direction.WEST)) posCount++;
+                    if (plane[i][j].getPossible(Direction.EAST)) posCount++;
                 }
             }
         }
@@ -117,10 +117,10 @@ public class DeterministicLocalization {
         }
 
         for (int i = 0; i < 4; i++) {
-            plane[0][i].obstacleN = true;
-            plane[3][i].obstacleS = true;
-            plane[i][0].obstacleW = true;
-            plane[i][3].obstacleE = true;
+            plane[0][i].setObstacle(Direction.NORTH, true);
+            plane[3][i].setObstacle(Direction.SOUTH, true);
+            plane[i][0].setObstacle(Direction.WEST, true);
+            plane[i][3].setObstacle(Direction.EAST, true);
         }
         fillRemainingPositions(plane);
 
@@ -130,31 +130,19 @@ public class DeterministicLocalization {
     }
 
     public static void fillRemainingPositions(Tile[][] plane) {
-        plane[0][1].obstacleW = true;
-        plane[0][2].obstacleS = true;
-        plane[0][3].obstacleS = true;
-        plane[1][0].obstacleN = true;
-        plane[1][1].obstacleE = true;
-        plane[2][2].obstacleN = true;
-        plane[2][3].obstacleN = true;
-        plane[3][0].obstacleE = true;
-        plane[3][2].obstacleW = true;
-        plane[0][0].isObstacle = true;
-        plane[1][2].isObstacle = true;
-        plane[1][3].isObstacle = true;
-        plane[3][1].isObstacle = true;
-    }
-
-    public static void printGrid(Tile[][] plane)
-    {
-        for(int i = 0; i < 4; i++)
-        {
-            for(int j = 0; j < 4; j++)
-            {
-                System.out.println(String.valueOf(plane[i][j].obstacleN) + "  ");
-            }
-            System.out.println();
-        }
+        plane[0][1].setObstacle(Direction.WEST, true);
+        plane[0][2].setObstacle(Direction.SOUTH, true);
+        plane[0][3].setObstacle(Direction.SOUTH, true);
+        plane[1][0].setObstacle(Direction.NORTH, true);
+        plane[1][1].setObstacle(Direction.EAST, true);
+        plane[2][2].setObstacle(Direction.NORTH, true);
+        plane[2][3].setObstacle(Direction.NORTH, true);
+        plane[3][0].setObstacle(Direction.EAST, true);
+        plane[3][2].setObstacle(Direction.WEST, true);
+        plane[0][0].setObstacle(true);
+        plane[1][2].setObstacle(true);
+        plane[1][3].setObstacle(true);
+        plane[3][1].setObstacle(true);
     }
 
 }

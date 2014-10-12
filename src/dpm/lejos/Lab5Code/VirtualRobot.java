@@ -54,14 +54,15 @@ public class VirtualRobot {
     public boolean hasWallAhead(Tile[][] plane) {
         synchronized (lock) {
             if (this.dir == Direction.NORTH) {
-                return plane[y][x].obstacleN;
+                return plane[y][x].hasObstacle(Direction.NORTH);
             } else if (this.dir == Direction.SOUTH) {
-                return plane[y][x].obstacleS;
+                return plane[y][x].hasObstacle(Direction.SOUTH);
             } else if (this.dir == Direction.EAST) {
-                return plane[y][x].obstacleE;
-            } else {
-                return plane[y][x].obstacleW;
+                return plane[y][x].hasObstacle(Direction.EAST);
+            } else if (this.dir == Direction.WEST) {
+                return plane[y][x].hasObstacle(Direction.WEST);
             }
+            return false;
         }
     }
 
