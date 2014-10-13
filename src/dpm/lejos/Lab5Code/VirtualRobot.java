@@ -23,9 +23,9 @@ public class VirtualRobot {
     public void moveForward() {
         synchronized (lock) {
             if (this.dir == Direction.NORTH) {
-                y++;
-            } else if (this.dir == Direction.SOUTH) {
                 y--;
+            } else if (this.dir == Direction.SOUTH) {
+                y++;
             } else if (this.dir == Direction.EAST) {
                 x++;
             } else {

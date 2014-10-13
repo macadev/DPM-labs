@@ -59,8 +59,17 @@ public class Tile {
      * Set the presence of an obstacle in a direction to false, i.e. clear
      * @param dir the direction to change
      */
-    public void setDirectionToFalse(Direction dir) {
-        setObstacle(dir, false);
+    
+    public void setPossibilityToFalse(Direction dir) {
+        if (dir == Direction.NORTH) {
+            this.possibleN = false;
+        } else if (dir == Direction.WEST) {
+            this.possibleW = false;
+        } else if (dir == Direction.EAST) {
+            this.possibleE = false;
+        } else {
+            this.possibleS = false;
+        }
     }
 
     /**
@@ -85,7 +94,7 @@ public class Tile {
      * @param dir the direction to poll
      * @return the existence of an obstacle in that direction
      */
-    public boolean getPossible(Direction dir) {
+    public boolean isPossible(Direction dir) {
         if (dir == Direction.NORTH) {
             return this.possibleN;
         } else if (dir == Direction.WEST) {
@@ -95,6 +104,16 @@ public class Tile {
         } else {
             return this.possibleS;
         }
+    }
+
+    /**
+     * Closes all possible starting points for the tile
+     */    
+    public void closeAllPossibilities() {
+        this.possibleN = false;
+        this.possibleS = false;
+        this.possibleW = false;
+        this.possibleE = false;
     }
 
     /**
