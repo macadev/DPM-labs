@@ -69,11 +69,10 @@ public class DeterministicLocalization {
     }
 
     private void printGoodbye(ArrayList<Motion> motionTrace){
-        LCD.clear();
-
         LCD.drawString("Completed orienteering", 0,0);
         LCD.drawString("Number of moves:", 0,1);
         LCD.drawString(String.valueOf(motionTrace.size()),0,2);
+
     }
 
     private void printInitialConditions(Coordinate startingPosition){
