@@ -105,9 +105,14 @@ public class Orienteering {
     private void printInitialConditions(Coordinate startingPosition){
         LCD.clear();
 
+        //adjusting the coordinate frame to match the TA's expectations
+        int y=Math.abs(startingPosition.getY()-3)*30-15;
+        int x=startingPosition.getX()*30-15;
+
         LCD.drawString("Figured out \ninitial position", 0,3);
-        LCD.drawString("X: "+ String.valueOf(startingPosition.getX()), 0,5);
-        LCD.drawString("Y: "+ String.valueOf(startingPosition.getY()), 0,6);
+        LCD.drawString("X: "+ String.valueOf(x), 0,5);
+        LCD.drawString("Y: "+ String.valueOf(y), 0,6);
+        LCD.drawString("Dir: "+ String.valueOf(startingDir), 0,7);
 
     }
 
