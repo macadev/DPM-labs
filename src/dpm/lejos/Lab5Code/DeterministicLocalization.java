@@ -130,7 +130,12 @@ public class DeterministicLocalization {
 
         return countPossibilities(plane);
     }
-    
+
+    /**
+     * Returns a random boolean based on Java's Math.random()
+     * function. Used for stochastic positioning
+     * * @return a boolean variable
+     */
     public boolean getRandomBoolean() {
         return Math.random() < 0.5;
         //I tried another approaches here, still the same result
@@ -188,7 +193,13 @@ public class DeterministicLocalization {
 		}
 	}
 
-	public Coordinate findStartingPosition() {
+    /**
+     * Calculates the starting location and orientation of the robot
+     * once it has has finished eliminating impossible
+     * starting points on the grid
+     * @return Coordinates where the robot started
+     */
+    public Coordinate findStartingPosition() {
     	
     	Direction[] directions = { Direction.NORTH, 
     							   Direction.SOUTH,
