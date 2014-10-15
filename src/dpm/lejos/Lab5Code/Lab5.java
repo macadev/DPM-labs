@@ -35,11 +35,12 @@ public class Lab5 {
 
         if (buttonChoice == Button.ID_LEFT) {
 
-           
-           dl.deterministicPositioning();
+            //start deterministic Positioning algorithm
+            dl.deterministicPositioning();
 
         } else {
 
+            //start stochastic Positioning algorithm
             dl.stochasticPositioning();
 
         }
