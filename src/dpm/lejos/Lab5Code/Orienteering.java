@@ -1,18 +1,17 @@
-
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import lejos.nxt.LCD;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.UltrasonicSensor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
+ * Orientation and navigation methods for lab 5
  *
  * @author Daniel Macario David Lavoie-Boutin
  * @version 1.0
  */
-public class DeterministicLocalization {
+public class Orienteering {
 
     private Tile[][] plane;
     private UltrasonicSensor us;
@@ -28,7 +27,7 @@ public class DeterministicLocalization {
     private static int DISTANCE_THRESHOLD = 30;
 
 
-    public DeterministicLocalization(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double wheel_distance, double wheel_radius) {
+    public Orienteering(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double wheel_distance, double wheel_radius) {
         this.plane = createPlane();
         this.us = us;
         this.lm = leftMotor;
