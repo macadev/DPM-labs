@@ -1,7 +1,8 @@
 /**
- * Created by danielmacario on 2014-10-14.
+ * Main executable for lab 5
+ * @author Daniel Macario
+ * @author David Lavoie-Boutin
  */
-
 import lejos.nxt.*;
 import lejos.nxt.comm.RConsole;
 import lejos.nxt.comm.USBConnection;
@@ -10,20 +11,18 @@ public class Lab5 {
 
     public static void main (String [] argv){
         int buttonChoice;
-        //RConsole.openUSB(10000);
 
-        //Required Elements:
-        //Odometer odo = new Odometer(patBot, 30, true);
         UltrasonicSensor us = new UltrasonicSensor(SensorPort.S2);
         NXTRegulatedMotor leftMotor = Motor.A;
         NXTRegulatedMotor rightMotor = Motor.B;
-        DeterministicLocalization dl = new DeterministicLocalization(us, leftMotor, rightMotor );
+        double WHEEL_RADIUS = 2.1;
+        double WHEEL_DISTANCE = 15;
+
+        DeterministicLocalization dl = new DeterministicLocalization(us, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS );
         
         do {
-            // clear the display
-            LCD.clear();
 
-            // ask the user whether the motors should drive in a square or float
+            LCD.clear();
             LCD.drawString("< Left | Right >", 0, 0);
             LCD.drawString("       |        ", 0, 1);
             LCD.drawString(" deter |  rando ", 0, 2);

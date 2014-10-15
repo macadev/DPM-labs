@@ -2,7 +2,7 @@
 
 /**
  * Class to track the position and path of the robot. This allows us to compare the movements of the robot to compare with the obstacle position
- * @author danielmacario
+ * @author Daniel Macario
  */
 public class VirtualRobot {
 
@@ -51,6 +51,11 @@ public class VirtualRobot {
         }
     }
 
+    /**
+     * Method determining if the robot is facing a wall
+     * @param plane the playground layout
+     * @return is there a wall ahead considering the current position and orientation
+     */
     public boolean hasWallAhead(Tile[][] plane) {
         synchronized (lock) {
             if (this.dir == Direction.NORTH) {

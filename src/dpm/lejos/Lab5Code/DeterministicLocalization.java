@@ -1,6 +1,7 @@
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import lejos.nxt.LCD;
 import lejos.nxt.NXTRegulatedMotor;
@@ -18,33 +19,39 @@ public class DeterministicLocalization {
     private UltrasonicSensor us;
     private NXTRegulatedMotor lm;
     private NXTRegulatedMotor rm;
-    private static double WHEEL_RADIUS = 2.1;
-    private static double WHEEL_DISTANCE = 15;
+    private double WHEEL_RADIUS;
+    private double WHEEL_DISTANCE;
     private static final int FORWARD_SPEED = 300;
     private static final int ROTATE_SPEED = 150;
-    public Direction startingDir;
-    public Direction endingDir;
+    private Direction startingDir;
+    private Direction endingDir;
 
-    public int deterministicPositioning() {
+    public DeterministicLocalization(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double wheel_distance, double wheel_radius) {
+        this.plane = createPlane();
+        this.us = us;
+        this.lm = leftMotor;
+        this.rm = rightMotor;
+        this.WHEEL_DISTANCE=wheel_distance;
+        this.WHEEL_RADIUS=wheel_radius;
+    }
 
-        //printGrid(plane);
+    public void deterministicPositioning() {
+
+        int DISTANCE_THRESHOLD = 30;
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
         lm.setAcceleration(500);
         rm.setAcceleration(500);
         while(countPossibilities(this.plane) > 1) {
-        	//printGrid(plane);
-        	//RConsole.println("Iterating");
-        	sleep();        	
+
+        	sleep(1000);
             int distanceToWall = getFilteredData();
-            //RConsole.println(Integer.toString(distanceToWall));
-            if (distanceToWall < 24) {
-            	//RConsole.println("ROTATING");
+
+            if (distanceToWall < DISTANCE_THRESHOLD) {
                 simulateOnAllTiles(Obstacle.OBSTACLE, motionTrace, plane);
                 rotate90CounterClock();
                 motionTrace.add(Motion.ROTATE);
             } else {
-            	//RConsole.println("FORWARD");
                 simulateOnAllTiles(Obstacle.CLEAR, motionTrace, plane);
                 moveForward();
                 motionTrace.add(Motion.FORWARD);
@@ -52,15 +59,32 @@ public class DeterministicLocalization {
         }
         
         Coordinate startingPosition = findStartingPosition();
-        //RConsole.println("y = " + Integer.toString(startingPosition.getY()) + " x = " + Integer.toString(startingPosition.getX()));
         Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
+
+        printInitialConditions(startingPosition);
+
         moveToPlaneCorner(endingPosition);
 
-        LCD.drawString("algo solved", 0, 0);
-        //printGrid(plane);
-        return countPossibilities(plane);
+        printGoodbye(motionTrace);
     }
-    
+
+    private void printGoodbye(ArrayList<Motion> motionTrace){
+        LCD.clear();
+
+        LCD.drawString("Completed orienteering", 0,0);
+        LCD.drawString("Number of moves:", 0,1);
+        LCD.drawString(String.valueOf(motionTrace.size()),0,2);
+    }
+
+    private void printInitialConditions(Coordinate startingPosition){
+        LCD.clear();
+
+        LCD.drawString("Figured out \ninitial position", 0,0);
+        LCD.drawString("X: "+ String.valueOf(startingPosition.getX()), 0,4);
+        LCD.drawString("Y: "+ String.valueOf(startingPosition.getY()), 0,5);
+
+    }
+
     public int stochasticPositioning() {
 
         //printGrid(plane);
@@ -71,7 +95,7 @@ public class DeterministicLocalization {
         while(countPossibilities(this.plane) > 1) {
         	//printGrid(plane);
         	//RConsole.println("Iterating");
-        	sleep();        	
+        	sleep(1000);
             int distanceToWall = getFilteredData();
             //RConsole.println(Integer.toString(distanceToWall));
             if (distanceToWall < 24) {
@@ -99,10 +123,11 @@ public class DeterministicLocalization {
         Coordinate startingPosition = findStartingPosition();
         //RConsole.println("y = " + Integer.toString(startingPosition.getY()) + " x = " + Integer.toString(startingPosition.getX()));
         Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
+        printInitialConditions(startingPosition);
         moveToPlaneCorner(endingPosition);
 
-        LCD.drawString("algo solved", 0, 0);
-        //printGrid(plane);
+        printGoodbye(motionTrace);
+
         return countPossibilities(plane);
     }
     
@@ -120,7 +145,7 @@ public class DeterministicLocalization {
 		currentDirection = Direction.NORTH;
 		//RConsole.println("y = " + Integer.toString(y) + " x = " + Integer.toString(x));
 		while (true) {
-			sleep();
+			sleep(1000);
 			
 			if (currentDirection != Direction.NORTH) {
 				rotateNorth(currentDirection);
@@ -198,10 +223,13 @@ public class DeterministicLocalization {
             }
         }
 		this.endingDir = vr.getDir();
-		Coordinate coord = new Coordinate(vr.getX(), vr.getY());
-		return coord;
+        return new Coordinate(vr.getX(), vr.getY());
     }
-	
+
+    /**
+     * position the robot facing north
+     * @param dir the current heading
+     */
 	public void rotateNorth(Direction dir) {
 		if (dir == null) {
 			if (this.endingDir == Direction.SOUTH) {
@@ -230,14 +258,20 @@ public class DeterministicLocalization {
         lm.rotate(convertAngle(-90), true);
         rm.rotate(convertAngle(90), false);
     }
-    
+
+    /**
+     * rotate the physical robot 90 degrees clockwise
+     */
     public void rotate90ClockWise() {
     	lm.setSpeed(ROTATE_SPEED);
         rm.setSpeed(ROTATE_SPEED);
         lm.rotate(convertAngle(90), true);
         rm.rotate(convertAngle(-90), false);
     }
-    
+
+    /**
+     * move the robot one tile forward
+     */
     public void moveForward() {
     	lm.setSpeed(FORWARD_SPEED);
         rm.setSpeed(FORWARD_SPEED);
@@ -245,7 +279,13 @@ public class DeterministicLocalization {
         rm.rotate(convertDistance(30), false);
     }
 
-
+    /**
+     * simulate the recorded motion for all
+     * starting position possible
+     * @param obs is there an obstacle in front of us
+     * @param motionTrace the stack of movements applied so far
+     * @param plane the playground layout
+     */
     public void simulateOnAllTiles(Obstacle obs, ArrayList<Motion> motionTrace, Tile[][] plane) {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -280,7 +320,6 @@ public class DeterministicLocalization {
 
                             boolean hasObstacle = plane[vr.getY()][vr.getX()].hasObstacle(vr.getDir());
                             if (hasObstacle && obs == Obstacle.CLEAR || !hasObstacle && obs == Obstacle.OBSTACLE) {
-                            	//RConsole.println("SETTING i = " + i + " j = " + j + " to false");
                                 plane[i][j].setPossibilityToFalse(selectedDir);
                             }
                         }
@@ -290,6 +329,11 @@ public class DeterministicLocalization {
         }
     }
 
+    /**
+     * Count the remaining possibilities for the starting position
+     * @param plane the plane object reference
+     * @return the number of possible starting position
+     */
     public int countPossibilities(Tile[][] plane) {
         int posCount = 0;
         for (int i = 0; i < 4; i++) {
@@ -305,6 +349,11 @@ public class DeterministicLocalization {
         return posCount;
     }
 
+    /**
+     * Create the Tile array with the walls
+     * and place the obstacles on the playground
+     * @return The newly created and populated Tile array
+     */
     public Tile[][] createPlane() {
         Tile[][] plane = new Tile[4][4];
 
@@ -322,11 +371,15 @@ public class DeterministicLocalization {
         }
         fillRemainingPositions(plane);
 
-        int x = countPossibilities(plane);
+        countPossibilities(plane);
 
         return plane;
     }
 
+    /**
+     * setup for initial playground layout
+     * @param plane the reference to the Tile array
+     */
     public void fillRemainingPositions(Tile[][] plane) {
         plane[0][1].setObstacle(Direction.WEST, true);
         plane[0][2].setObstacle(Direction.SOUTH, true);
@@ -349,52 +402,31 @@ public class DeterministicLocalization {
         plane[3][1].closeAllPossibilities();
     }
 
-    public void printGrid(Tile[][] plane) {
-        
-        Direction[] directions = { Direction.NORTH, 
-                            Direction.SOUTH,
-                            Direction.EAST,
-                            Direction.WEST 
-                          };
-
-        for(Direction dir : directions) {
-
-            if (dir == Direction.NORTH) {
-                RConsole.println("North possibilities");
-            } else if (dir == Direction.SOUTH) {
-                RConsole.println("South possibilities");
-            } else if (dir == Direction.EAST) {
-                RConsole.println("East possibilities");
-            } else {
-                RConsole.println("West possibilities");
-            }
-
-            for(int i = 0; i < 4; i++)
-            {
-                for(int j = 0; j < 4; j++)
-                {
-                    RConsole.print(String.valueOf(plane[i][j].isPossible(dir)) + "  ");
-                }
-                RConsole.println("");
-            }
-        }
-    }
-
-    public DeterministicLocalization(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
-        this.plane = createPlane();
-        this.us = us;
-        this.lm = leftMotor;
-        this.rm = rightMotor;
-    }
-
+    /**
+     * Conversion from desired travel distance to motor rotation angle (tacho count)
+     * @param distance distance to travel
+     * @return number of degrees the motor should travel to match the desired distance
+     */
     private int convertDistance(double distance) {
         return (int) ((180.0 * distance) / (Math.PI * this.WHEEL_RADIUS));
     }
 
+    /**
+     * Translates a desired rotation of the robot around its center to a
+     * number of degrees each wheel should turn
+     *
+     * @param angle the angle the robot should rotate
+     * @return the angle a motor should travel for the robot to rotate
+     */
     private int convertAngle(double angle) {
         return convertDistance(Math.PI * this.WHEEL_DISTANCE * angle / 360.0);
     }
-    
+
+    /**
+     * take five readings with the ultrasonic sensor
+     * and return the median value
+     * @return the filtered distance read with the us sensor
+     */
     private int getFilteredData() {
 		int distance;
 		int[] dist = new int[5];
@@ -402,58 +434,22 @@ public class DeterministicLocalization {
 			us.ping();
 
 			// wait for ping to complete
-			try { Thread.sleep(50); } catch (InterruptedException e) {}
-
+			sleep(50);
 			// there will be a delay
 			dist[i] = us.getDistance();
 
 		}
 
-		// sort the array to take the median
-		// take values in the array sequentially
-		findMedian(dist);
-		// take the middle value in the array which is the median and return it
+        Arrays.sort(dist);
 		distance = dist[2];
 				
 		return distance;
 	}
-	
-	private void findMedian(int[] dist) {
-		// sort the array to take the median
-		// take values in the array sequentially
-		for (int j = 0; j < 5; j++) {
-			int min = dist[j];
-			int pos = j;
 
-			// find the min value in the remaining part of the array
-			for (int k = j; k < 5; k++) {
-				if (dist[k] < min) {
-					min = dist[k];
-					pos = k;
-				}
-			}
-
-			// set the first position of the unsorted array to the min
-			int temp = dist[j];
-			dist[j] = min;
-			dist[pos] = temp;
-
-		}
+    /**
+     * Sleep thread 1 second
+     */
+	public void sleep(int delay) {
+		try { Thread.sleep(delay); } catch (InterruptedException e) {e.printStackTrace();}
 	}
-	
-	public void sleep() {
-		try { Thread.sleep(1000); } catch (InterruptedException e) {};
-	}
-
-    /*
-    public static void main(String[] args) {
-
-        Tile[][] plane;
-        this.plane = createPlane();
-
-        int x = deterministicPositioning(plane);
-
-    }
-    */
-
 }
