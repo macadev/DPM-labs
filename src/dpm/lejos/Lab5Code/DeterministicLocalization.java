@@ -251,7 +251,10 @@ public class DeterministicLocalization {
 	    	}
 		}
     }
-	
+
+    /**
+     * rotate the physical robot 90 degrees counterclockwise
+     */
     public void rotate90CounterClock() {
     	lm.setSpeed(ROTATE_SPEED);
         rm.setSpeed(ROTATE_SPEED);
