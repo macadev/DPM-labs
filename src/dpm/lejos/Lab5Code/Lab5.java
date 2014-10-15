@@ -18,7 +18,7 @@ public class Lab5 {
         double WHEEL_RADIUS = 2.1;
         double WHEEL_DISTANCE = 15;
 
-        DeterministicLocalization dl = new DeterministicLocalization(us, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS );
+        Orienteering orienteering = new Orienteering(us, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS );
         
         do {
 
@@ -36,12 +36,12 @@ public class Lab5 {
         if (buttonChoice == Button.ID_LEFT) {
 
             //start deterministic Positioning algorithm
-            dl.deterministicPositioning();
+            orienteering.deterministicPositioning();
 
         } else {
 
             //start stochastic Positioning algorithm
-            dl.stochasticPositioning();
+            orienteering.stochasticPositioning();
 
         }
 
