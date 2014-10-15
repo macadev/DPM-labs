@@ -23,6 +23,7 @@ public class DeterministicLocalization {
     private double WHEEL_DISTANCE;
     private static final int FORWARD_SPEED = 300;
     private static final int ROTATE_SPEED = 150;
+    private static final int ACCELERATION = 1000;
     private Direction startingDir;
     private Direction endingDir;
 
@@ -58,8 +59,8 @@ public class DeterministicLocalization {
         int DISTANCE_THRESHOLD = 30;
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
-        lm.setAcceleration(500);
-        rm.setAcceleration(500);
+        lm.setAcceleration(ACCELERATION);
+        rm.setAcceleration(ACCELERATION);
         while(countPossibilities(this.plane) > 1) {
 
         	sleep(1000);
@@ -122,8 +123,8 @@ public class DeterministicLocalization {
     public void stochasticPositioning() {
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
-        lm.setAcceleration(500);
-        rm.setAcceleration(500);
+        lm.setAcceleration(ACCELERATION);
+        rm.setAcceleration(ACCELERATION);
         while(countPossibilities(this.plane) > 1) {
         	sleep(1000);
             int distanceToWall = getFilteredData();
