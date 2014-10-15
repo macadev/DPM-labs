@@ -68,6 +68,10 @@ public class DeterministicLocalization {
         printGoodbye(motionTrace);
     }
 
+    /**
+     * 
+     * @param motionTrace
+     */
     private void printGoodbye(ArrayList<Motion> motionTrace){
         LCD.drawString("Completed orienteering", 0,0);
         LCD.drawString("Number of moves:", 0,1);
