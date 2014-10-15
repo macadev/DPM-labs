@@ -35,6 +35,24 @@ public class DeterministicLocalization {
         this.WHEEL_RADIUS=wheel_radius;
     }
 
+    /**
+     * Determines the initial location and orientation of the robot
+     * based on data obtained from its surroundings.
+     *
+     * The robot is rotated
+     * and moved forward depending on the distances recorded by the US.
+     *
+     * Then It the trace of movements it performs are simulated on all valid
+     * starting positions of the grid, which allows us to cross out all positions
+     * until only one remains.
+     *
+     * At this point we have found the starting position of
+     * the robot.
+     *
+     * After, we compute the ending position based on trace of motions,
+     * and finally the robot is driven
+     * to the north-east corner and oriented north.
+     */
     public void deterministicPositioning() {
 
         int DISTANCE_THRESHOLD = 30;
@@ -69,7 +87,8 @@ public class DeterministicLocalization {
     }
 
     /**
-     * 
+     * Prints the number of moves performed once we have
+     * reached the end of the entire motion
      * @param motionTrace
      */
     private void printGoodbye(ArrayList<Motion> motionTrace){
