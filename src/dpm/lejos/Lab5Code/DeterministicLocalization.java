@@ -221,8 +221,16 @@ public class DeterministicLocalization {
     	return coord;
 	}
 
+    /**
+     * using the virtual implementation of the robot and the
+     * stack of recorded moves, we find out where the orienteering
+     * algorithm has lead us
+     *
+     * @param motionTrace the stack of recorded moves
+     * @param startingPosition the initial position
+     * @return the current position
+     */
 	public Coordinate findEndingPosition(ArrayList<Motion> motionTrace, Coordinate startingPosition) {
-		//RConsole.println("row = " + Integer.toString(startingPosition[1]) + " col = " + Integer.toString(startingPosition[0]));
 		VirtualRobot vr = new VirtualRobot(startingPosition.getX(), startingPosition.getY(), this.startingDir);
 		if (!motionTrace.isEmpty()) {
             for (Motion motion : motionTrace ) {
