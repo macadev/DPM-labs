@@ -98,12 +98,16 @@ public class DeterministicLocalization {
 
     }
 
+    /**
+     * print the initial conditions to the LCD display
+     * @param startingPosition
+     */
     private void printInitialConditions(Coordinate startingPosition){
         LCD.clear();
 
-        LCD.drawString("Figured out \ninitial position", 0,0);
-        LCD.drawString("X: "+ String.valueOf(startingPosition.getX()), 0,4);
-        LCD.drawString("Y: "+ String.valueOf(startingPosition.getY()), 0,5);
+        LCD.drawString("Figured out \ninitial position", 0,3);
+        LCD.drawString("X: "+ String.valueOf(startingPosition.getX()), 0,5);
+        LCD.drawString("Y: "+ String.valueOf(startingPosition.getY()), 0,6);
 
     }
 
