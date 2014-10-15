@@ -85,27 +85,28 @@ public class DeterministicLocalization {
 
     }
 
-    public int stochasticPositioning() {
-
-        //printGrid(plane);
+    /**
+     * finds the initial position and orientation of the robot
+     * based on a random series of forward and rotation moves
+     *
+     * the algorithm records the moves made and compares the possible
+     * initial position that would allow such moves to be possible
+     *
+     */
+    public void stochasticPositioning() {
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
         lm.setAcceleration(500);
         rm.setAcceleration(500);
         while(countPossibilities(this.plane) > 1) {
-        	//printGrid(plane);
-        	//RConsole.println("Iterating");
         	sleep(1000);
             int distanceToWall = getFilteredData();
-            //RConsole.println(Integer.toString(distanceToWall));
+
             if (distanceToWall < 24) {
-            	//RConsole.println("ROTATING");
                 simulateOnAllTiles(Obstacle.OBSTACLE, motionTrace, plane);
                 rotate90CounterClock();
                 motionTrace.add(Motion.ROTATE);
             } else {
-            	//RConsole.println("FORWARD");
-            	
             	boolean shouldRotate = getRandomBoolean();
             	
             	if (shouldRotate) {
@@ -121,14 +122,12 @@ public class DeterministicLocalization {
         }
         
         Coordinate startingPosition = findStartingPosition();
-        //RConsole.println("y = " + Integer.toString(startingPosition.getY()) + " x = " + Integer.toString(startingPosition.getX()));
+
         Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
         printInitialConditions(startingPosition);
         moveToPlaneCorner(endingPosition);
 
         printGoodbye(motionTrace);
-
-        return countPossibilities(plane);
     }
 
     /**
