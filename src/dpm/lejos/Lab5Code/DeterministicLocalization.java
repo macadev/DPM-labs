@@ -26,6 +26,8 @@ public class DeterministicLocalization {
     private static final int ACCELERATION = 1000;
     private Direction startingDir;
     private Direction endingDir;
+    private static int DISTANCE_THRESHOLD = 30;
+
 
     public DeterministicLocalization(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double wheel_distance, double wheel_radius) {
         this.plane = createPlane();
@@ -56,8 +58,7 @@ public class DeterministicLocalization {
      */
     public void deterministicPositioning() {
 
-        int DISTANCE_THRESHOLD = 30;
-
+        
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
         lm.setAcceleration(ACCELERATION);
         rm.setAcceleration(ACCELERATION);
@@ -90,7 +91,7 @@ public class DeterministicLocalization {
     /**
      * Prints the number of moves performed once we have
      * reached the end of the entire motion
-     * @param motionTrace
+     * @param motionTrace the stack of movements applied so far
      */
     private void printGoodbye(ArrayList<Motion> motionTrace){
         LCD.drawString("Completed orienteering", 0,0);
@@ -101,7 +102,7 @@ public class DeterministicLocalization {
 
     /**
      * print the initial conditions to the LCD display
-     * @param startingPosition
+     * @param startingPosition the initial position
      */
     private void printInitialConditions(Coordinate startingPosition){
         LCD.clear();
@@ -129,7 +130,7 @@ public class DeterministicLocalization {
         	sleep(1000);
             int distanceToWall = getFilteredData();
 
-            if (distanceToWall < 24) {
+            if (distanceToWall < DISTANCE_THRESHOLD) {
                 simulateOnAllTiles(Obstacle.OBSTACLE, motionTrace, plane);
                 rotate90CounterClock();
                 motionTrace.add(Motion.ROTATE);
@@ -164,7 +165,6 @@ public class DeterministicLocalization {
      */
     public boolean getRandomBoolean() {
         return Math.random() < 0.5;
-        //I tried another approaches here, still the same result
     }
 
     /**
@@ -192,18 +192,18 @@ public class DeterministicLocalization {
 				break;
 			}
 			
-			if (y > 0 && distanceToWall > 24 && currentDirection == Direction.NORTH) {
+			if (y > 0 && distanceToWall > DISTANCE_THRESHOLD && currentDirection == Direction.NORTH) {
 				moveForward();
 				y--;
 			} else if (x == 1 && y != 0) {
 				moveForward();
 				y--;
-			} else if (y > 0 && distanceToWall < 24 && x > 1) {
+			} else if (y > 0 && distanceToWall < DISTANCE_THRESHOLD && x > 1) {
 				rotate90CounterClock();
 				moveForward();
 				currentDirection = Direction.WEST;
 				x--;
-			} else if (y > 0 && distanceToWall < 24 && x < 1) {
+			} else if (y > 0 && distanceToWall < DISTANCE_THRESHOLD && x < 1) {
 				rotate90ClockWise();
 				moveForward();
 				currentDirection = Direction.EAST;
@@ -211,7 +211,7 @@ public class DeterministicLocalization {
 			} else if (y == 0) {
 				rotate90ClockWise();
 				currentDirection = Direction.EAST;
-				while (getFilteredData() > 24) {
+				while (getFilteredData() > DISTANCE_THRESHOLD) {
 					moveForward();
 					x++;
 				}
@@ -235,8 +235,8 @@ public class DeterministicLocalization {
     	
     	Coordinate coord = new Coordinate(0,0);
     	for(Direction dir : directions) {
-    		for(int i = 0; i < 4; i++) {
-    			for(int j = 0; j < 4; j++) {
+    		for(int i = 0; i < plane.length; i++) {
+    			for(int j = 0; j < plane.length; j++) {
     				if (plane[i][j].isPossible(dir)) {
     					coord = new Coordinate(j,i);
     					this.startingDir = dir;
@@ -336,9 +336,9 @@ public class DeterministicLocalization {
      * @param plane the playground layout
      */
     public void simulateOnAllTiles(Obstacle obs, ArrayList<Motion> motionTrace, Tile[][] plane) {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                for (int k = 0; k < 4; k++) {
+        for (int i = 0; i < plane.length; i++) {
+            for (int j = 0; j < plane.length; j++) {
+                for (int k = 0; k < plane.length; k++) {
                     if (!plane[i][j].isObstacle()) {
                         Direction selectedDir;
                         VirtualRobot vr;
@@ -385,8 +385,8 @@ public class DeterministicLocalization {
      */
     public int countPossibilities(Tile[][] plane) {
         int posCount = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < plane.length; i++) {
+            for (int j = 0; j < plane.length; j++) {
                 if (!plane[i][j].isObstacle()) {
                     if (plane[i][j].isPossible(Direction.NORTH)) posCount++;
                     if (plane[i][j].isPossible(Direction.SOUTH)) posCount++;
@@ -406,13 +406,13 @@ public class DeterministicLocalization {
     public Tile[][] createPlane() {
         Tile[][] plane = new Tile[4][4];
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < plane.length; i++) {
+            for (int j = 0; j < plane.length; j++) {
                 plane[i][j] = new Tile();
             }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < plane.length; i++) {
             plane[0][i].setObstacle(Direction.NORTH, true);
             plane[3][i].setObstacle(Direction.SOUTH, true);
             plane[i][0].setObstacle(Direction.WEST, true);
