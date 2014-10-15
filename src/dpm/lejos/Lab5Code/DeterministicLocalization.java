@@ -135,15 +135,17 @@ public class DeterministicLocalization {
         return Math.random() < 0.5;
         //I tried another approaches here, still the same result
     }
-    
-    
+
+    /**
+     * move the robot to a corner facing north
+     * @param endingPosition the tile we want to move to
+     */
     public void moveToPlaneCorner(Coordinate endingPosition) {
 		Direction currentDirection;
     	int y = endingPosition.getY();
 		int x = endingPosition.getX();
 		rotateNorth(null);
 		currentDirection = Direction.NORTH;
-		//RConsole.println("y = " + Integer.toString(y) + " x = " + Integer.toString(x));
 		while (true) {
 			sleep(1000);
 			
@@ -166,7 +168,6 @@ public class DeterministicLocalization {
 				moveForward();
 				y--;
 			} else if (y > 0 && distanceToWall < 24 && x > 1) {
-				//rotate west
 				rotate90CounterClock();
 				moveForward();
 				currentDirection = Direction.WEST;
