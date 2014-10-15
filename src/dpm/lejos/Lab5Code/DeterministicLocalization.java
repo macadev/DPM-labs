@@ -1,6 +1,11 @@
-package dpm.lejos.Lab5Code;
+
 
 import java.util.ArrayList;
+
+import lejos.nxt.LCD;
+import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.UltrasonicSensor;
+import lejos.nxt.comm.RConsole;
 
 /**
  *
@@ -9,34 +14,239 @@ import java.util.ArrayList;
  */
 public class DeterministicLocalization {
 
+    private Tile[][] plane;
+    private UltrasonicSensor us;
+    private NXTRegulatedMotor lm;
+    private NXTRegulatedMotor rm;
+    private static double WHEEL_RADIUS = 2.1;
+    private static double WHEEL_DISTANCE = 15;
+    private static final int FORWARD_SPEED = 300;
+    private static final int ROTATE_SPEED = 150;
+    public Direction startingDir;
+    public Direction endingDir;
 
-    public static int deterministicPositioning(Tile[][] plane) {
-        int x = 2;
-        int y = 0;
-        Direction dir = Direction.NORTH;
-        VirtualRobot vrt = new VirtualRobot(x, y, dir);
+    public int deterministicPositioning() {
+
+        //printGrid(plane);
 
         ArrayList<Motion> motionTrace = new ArrayList<Motion>();
-
-        while(countPossibilities(plane) > 1) {
-
-            if (vrt.hasWallAhead(plane)) {
+        lm.setAcceleration(500);
+        rm.setAcceleration(500);
+        while(countPossibilities(this.plane) > 1) {
+        	//printGrid(plane);
+        	//RConsole.println("Iterating");
+        	sleep();        	
+            int distanceToWall = getFilteredData();
+            //RConsole.println(Integer.toString(distanceToWall));
+            if (distanceToWall < 24) {
+            	//RConsole.println("ROTATING");
                 simulateOnAllTiles(Obstacle.OBSTACLE, motionTrace, plane);
-                vrt.rotate();
+                rotate90CounterClock();
                 motionTrace.add(Motion.ROTATE);
             } else {
+            	//RConsole.println("FORWARD");
                 simulateOnAllTiles(Obstacle.CLEAR, motionTrace, plane);
-                vrt.moveForward();
+                moveForward();
                 motionTrace.add(Motion.FORWARD);
             }
         }
+        
+        Coordinate startingPosition = findStartingPosition();
+        //RConsole.println("y = " + Integer.toString(startingPosition.getY()) + " x = " + Integer.toString(startingPosition.getX()));
+        Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
+        moveToPlaneCorner(endingPosition);
 
-        printGrid(plane);
+        LCD.drawString("algo solved", 0, 0);
+        //printGrid(plane);
         return countPossibilities(plane);
+    }
+    
+    public int stochasticPositioning() {
+
+        //printGrid(plane);
+
+        ArrayList<Motion> motionTrace = new ArrayList<Motion>();
+        lm.setAcceleration(500);
+        rm.setAcceleration(500);
+        while(countPossibilities(this.plane) > 1) {
+        	//printGrid(plane);
+        	//RConsole.println("Iterating");
+        	sleep();        	
+            int distanceToWall = getFilteredData();
+            //RConsole.println(Integer.toString(distanceToWall));
+            if (distanceToWall < 24) {
+            	//RConsole.println("ROTATING");
+                simulateOnAllTiles(Obstacle.OBSTACLE, motionTrace, plane);
+                rotate90CounterClock();
+                motionTrace.add(Motion.ROTATE);
+            } else {
+            	//RConsole.println("FORWARD");
+            	
+            	boolean shouldRotate = getRandomBoolean();
+            	
+            	if (shouldRotate) {
+            		simulateOnAllTiles(Obstacle.CLEAR, motionTrace, plane);
+                    rotate90CounterClock();
+                    motionTrace.add(Motion.ROTATE);
+            	} else {
+            		simulateOnAllTiles(Obstacle.CLEAR, motionTrace, plane);
+                    moveForward();
+                    motionTrace.add(Motion.FORWARD);
+            	}
+            }
+        }
+        
+        Coordinate startingPosition = findStartingPosition();
+        //RConsole.println("y = " + Integer.toString(startingPosition.getY()) + " x = " + Integer.toString(startingPosition.getX()));
+        Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
+        moveToPlaneCorner(endingPosition);
+
+        LCD.drawString("algo solved", 0, 0);
+        //printGrid(plane);
+        return countPossibilities(plane);
+    }
+    
+    public boolean getRandomBoolean() {
+        return Math.random() < 0.5;
+        //I tried another approaches here, still the same result
+    }
+    
+    
+    public void moveToPlaneCorner(Coordinate endingPosition) {
+		Direction currentDirection;
+    	int y = endingPosition.getY();
+		int x = endingPosition.getX();
+		rotateNorth(null);
+		currentDirection = Direction.NORTH;
+		//RConsole.println("y = " + Integer.toString(y) + " x = " + Integer.toString(x));
+		while (true) {
+			sleep();
+			
+			if (currentDirection != Direction.NORTH) {
+				rotateNorth(currentDirection);
+				currentDirection = Direction.NORTH;
+			} 
+			
+			int distanceToWall = getFilteredData();
+			
+			if (y == 0 && x == 3) {
+				rotateNorth(currentDirection);
+				break;
+			}
+			
+			if (y > 0 && distanceToWall > 24 && currentDirection == Direction.NORTH) {
+				moveForward();
+				y--;
+			} else if (x == 1 && y != 0) {
+				moveForward();
+				y--;
+			} else if (y > 0 && distanceToWall < 24 && x > 1) {
+				//rotate west
+				rotate90CounterClock();
+				moveForward();
+				currentDirection = Direction.WEST;
+				x--;
+			} else if (y > 0 && distanceToWall < 24 && x < 1) {
+				rotate90ClockWise();
+				moveForward();
+				currentDirection = Direction.EAST;
+				x++;
+			} else if (y == 0) {
+				rotate90ClockWise();
+				currentDirection = Direction.EAST;
+				while (getFilteredData() > 24) {
+					moveForward();
+					x++;
+				}
+			}
+		}
+	}
+
+	public Coordinate findStartingPosition() {
+    	
+    	Direction[] directions = { Direction.NORTH, 
+    							   Direction.SOUTH,
+    							   Direction.EAST,
+    							   Direction.WEST 
+              					 };
+    	
+    	Coordinate coord = new Coordinate(0,0);
+    	for(Direction dir : directions) {
+    		for(int i = 0; i < 4; i++) {
+    			for(int j = 0; j < 4; j++) {
+    				if (plane[i][j].isPossible(dir)) {
+    					coord = new Coordinate(j,i);
+    					this.startingDir = dir;
+    					break;
+    				}
+    			}
+    		}
+    	}
+    	return coord;
+	}
+
+	public Coordinate findEndingPosition(ArrayList<Motion> motionTrace, Coordinate startingPosition) {
+		//RConsole.println("row = " + Integer.toString(startingPosition[1]) + " col = " + Integer.toString(startingPosition[0]));
+		VirtualRobot vr = new VirtualRobot(startingPosition.getX(), startingPosition.getY(), this.startingDir);
+		if (!motionTrace.isEmpty()) {
+            for (Motion motion : motionTrace ) {
+                if (motion == Motion.FORWARD ) {
+                    vr.moveForward();
+                } else {
+                    vr.rotate();
+                }
+            }
+        }
+		this.endingDir = vr.getDir();
+		Coordinate coord = new Coordinate(vr.getX(), vr.getY());
+		return coord;
+    }
+	
+	public void rotateNorth(Direction dir) {
+		if (dir == null) {
+			if (this.endingDir == Direction.SOUTH) {
+	    		rotate90CounterClock();
+	    		rotate90CounterClock();
+	    	} else if (this.endingDir == Direction.EAST) {
+	    		rotate90CounterClock();
+	    	} else if (this.endingDir == Direction.WEST) {
+	    		rotate90ClockWise();
+	    	}
+		} else {
+			if (dir == Direction.SOUTH) {
+	    		rotate90CounterClock();
+	    		rotate90CounterClock();
+	    	} else if (dir == Direction.EAST) {
+	    		rotate90CounterClock();
+	    	} else if (dir == Direction.WEST) {
+	    		rotate90ClockWise();
+	    	}
+		}
+    }
+	
+    public void rotate90CounterClock() {
+    	lm.setSpeed(ROTATE_SPEED);
+        rm.setSpeed(ROTATE_SPEED);
+        lm.rotate(convertAngle(-90), true);
+        rm.rotate(convertAngle(90), false);
+    }
+    
+    public void rotate90ClockWise() {
+    	lm.setSpeed(ROTATE_SPEED);
+        rm.setSpeed(ROTATE_SPEED);
+        lm.rotate(convertAngle(90), true);
+        rm.rotate(convertAngle(-90), false);
+    }
+    
+    public void moveForward() {
+    	lm.setSpeed(FORWARD_SPEED);
+        rm.setSpeed(FORWARD_SPEED);
+        lm.rotate(convertDistance(30), true);
+        rm.rotate(convertDistance(30), false);
     }
 
 
-    public static void simulateOnAllTiles(Obstacle obs, ArrayList<Motion> motionTrace, Tile[][] plane) {
+    public void simulateOnAllTiles(Obstacle obs, ArrayList<Motion> motionTrace, Tile[][] plane) {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 4; k++) {
@@ -70,6 +280,7 @@ public class DeterministicLocalization {
 
                             boolean hasObstacle = plane[vr.getY()][vr.getX()].hasObstacle(vr.getDir());
                             if (hasObstacle && obs == Obstacle.CLEAR || !hasObstacle && obs == Obstacle.OBSTACLE) {
+                            	//RConsole.println("SETTING i = " + i + " j = " + j + " to false");
                                 plane[i][j].setPossibilityToFalse(selectedDir);
                             }
                         }
@@ -79,7 +290,7 @@ public class DeterministicLocalization {
         }
     }
 
-    public static int countPossibilities(Tile[][] plane) {
+    public int countPossibilities(Tile[][] plane) {
         int posCount = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -94,7 +305,7 @@ public class DeterministicLocalization {
         return posCount;
     }
 
-    public static Tile[][] createPlane() {
+    public Tile[][] createPlane() {
         Tile[][] plane = new Tile[4][4];
 
         for (int i = 0; i < 4; i++) {
@@ -116,13 +327,14 @@ public class DeterministicLocalization {
         return plane;
     }
 
-    public static void fillRemainingPositions(Tile[][] plane) {
+    public void fillRemainingPositions(Tile[][] plane) {
         plane[0][1].setObstacle(Direction.WEST, true);
         plane[0][2].setObstacle(Direction.SOUTH, true);
         plane[0][3].setObstacle(Direction.SOUTH, true);
         plane[1][0].setObstacle(Direction.NORTH, true);
         plane[1][1].setObstacle(Direction.EAST, true);
         plane[2][2].setObstacle(Direction.NORTH, true);
+        plane[2][1].setObstacle(Direction.SOUTH, true);
         plane[2][3].setObstacle(Direction.NORTH, true);
         plane[3][0].setObstacle(Direction.EAST, true);
         plane[3][2].setObstacle(Direction.WEST, true);
@@ -137,7 +349,7 @@ public class DeterministicLocalization {
         plane[3][1].closeAllPossibilities();
     }
 
-    public static void printGrid(Tile[][] plane) {
+    public void printGrid(Tile[][] plane) {
         
         Direction[] directions = { Direction.NORTH, 
                             Direction.SOUTH,
@@ -148,39 +360,100 @@ public class DeterministicLocalization {
         for(Direction dir : directions) {
 
             if (dir == Direction.NORTH) {
-                System.out.println("North possibilities");
+                RConsole.println("North possibilities");
             } else if (dir == Direction.SOUTH) {
-                System.out.println("South possibilities");
+                RConsole.println("South possibilities");
             } else if (dir == Direction.EAST) {
-                System.out.println("East possibilities");
+                RConsole.println("East possibilities");
             } else {
-                System.out.println("West possibilities");
+                RConsole.println("West possibilities");
             }
 
             for(int i = 0; i < 4; i++)
             {
                 for(int j = 0; j < 4; j++)
                 {
-                    System.out.printf(String.valueOf(plane[i][j].isPossible(dir)) + "  ");
+                    RConsole.print(String.valueOf(plane[i][j].isPossible(dir)) + "  ");
                 }
-                System.out.println();
+                RConsole.println("");
             }
         }
     }
 
+    public DeterministicLocalization(UltrasonicSensor us, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
+        this.plane = createPlane();
+        this.us = us;
+        this.lm = leftMotor;
+        this.rm = rightMotor;
+    }
 
+    private int convertDistance(double distance) {
+        return (int) ((180.0 * distance) / (Math.PI * this.WHEEL_RADIUS));
+    }
+
+    private int convertAngle(double angle) {
+        return convertDistance(Math.PI * this.WHEEL_DISTANCE * angle / 360.0);
+    }
+    
+    private int getFilteredData() {
+		int distance;
+		int[] dist = new int[5];
+		for (int i = 0; i < 5; i++) {
+			us.ping();
+
+			// wait for ping to complete
+			try { Thread.sleep(50); } catch (InterruptedException e) {}
+
+			// there will be a delay
+			dist[i] = us.getDistance();
+
+		}
+
+		// sort the array to take the median
+		// take values in the array sequentially
+		findMedian(dist);
+		// take the middle value in the array which is the median and return it
+		distance = dist[2];
+				
+		return distance;
+	}
+	
+	private void findMedian(int[] dist) {
+		// sort the array to take the median
+		// take values in the array sequentially
+		for (int j = 0; j < 5; j++) {
+			int min = dist[j];
+			int pos = j;
+
+			// find the min value in the remaining part of the array
+			for (int k = j; k < 5; k++) {
+				if (dist[k] < min) {
+					min = dist[k];
+					pos = k;
+				}
+			}
+
+			// set the first position of the unsorted array to the min
+			int temp = dist[j];
+			dist[j] = min;
+			dist[pos] = temp;
+
+		}
+	}
+	
+	public void sleep() {
+		try { Thread.sleep(1000); } catch (InterruptedException e) {};
+	}
+
+    /*
     public static void main(String[] args) {
 
-        //First we will need to enconde the grid;
-
-        Tile[][] plane = new Tile[4][4];
-        plane = createPlane();
+        Tile[][] plane;
+        this.plane = createPlane();
 
         int x = deterministicPositioning(plane);
-        System.out.println(x);
-
-
 
     }
+    */
 
 }
