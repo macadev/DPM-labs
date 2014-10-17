@@ -31,18 +31,29 @@ public class Lab5 {
 
             buttonChoice = Button.waitForAnyPress();
         } while (buttonChoice != Button.ID_LEFT
-                && buttonChoice != Button.ID_RIGHT);
+                && buttonChoice != Button.ID_RIGHT && buttonChoice!= Button.ID_ESCAPE);
 
         if (buttonChoice == Button.ID_LEFT) {
 
             //start deterministic Positioning algorithm
             orienteering.deterministicPositioning();
 
-        } else {
+        } else if (buttonChoice == Button.ID_RIGHT) {
 
             //start stochastic Positioning algorithm
             orienteering.stochasticPositioning();
 
+        } else {
+            LCD.clear();
+
+            orienteering.deterministicPositioning();
+            Button.waitForAnyPress();
+            for (int i = 0; i<10; i++){
+                LCD.clear();
+                orienteering = new Orienteering(us, leftMotor, rightMotor, WHEEL_DISTANCE, WHEEL_RADIUS );
+                orienteering.stochasticPositioning();
+                Button.waitForAnyPress();
+            }
         }
 
         while (Button.waitForAnyPress()!=Button.ID_ESCAPE){

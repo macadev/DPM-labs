@@ -1,5 +1,6 @@
 import lejos.nxt.LCD;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class Orienteering {
 
         printInitialConditions(startingPosition);
 
-        moveToPlaneCorner(endingPosition);
+        // moveToPlaneCorner(endingPosition);
 
         printGoodbye(motionTrace);
     }
@@ -96,6 +97,7 @@ public class Orienteering {
         LCD.drawString("Number of moves:", 0,1);
         LCD.drawString(String.valueOf(motionTrace.size()),0,2);
 
+        Sound.twoBeeps();
     }
 
     /**
@@ -156,7 +158,7 @@ public class Orienteering {
 
         Coordinate endingPosition = findEndingPosition(motionTrace, startingPosition);
         printInitialConditions(startingPosition);
-        moveToPlaneCorner(endingPosition);
+        //moveToPlaneCorner(endingPosition);
 
         printGoodbye(motionTrace);
     }
@@ -471,7 +473,7 @@ public class Orienteering {
      * @return the angle a motor should travel for the robot to rotate
      */
     private int convertAngle(double angle) {
-        return convertDistance(Math.PI * this.WHEEL_DISTANCE * angle / 360.0);
+        return convertDistance(Math.PI * this.WHEEL_DISTANCE * angle / 360.0 + 0.1);
     }
 
     /**
