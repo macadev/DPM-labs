@@ -18,3 +18,7 @@ Build Status
 |:--------:|:-------------------------------------------------------------------------------------:|
 | `master` | [![Build Status][Master Status]](http://104.131.160.54:8080/job/dpm_team_22_labs) |
 
+Documentation
+-------------
+
+For the API, click the build status and you will be presented with a link to the up-to-date api
