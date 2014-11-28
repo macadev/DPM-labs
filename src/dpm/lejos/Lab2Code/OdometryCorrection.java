@@ -84,6 +84,7 @@ public class OdometryCorrection extends Thread {
     /**
      * compute the closest line to the distance provided
      * @param distance distance you have when crossing the line
+     * @param angle the current robot orientation
      * @return position of the line you crossed
      */
     public double closestLine( double distance, double angle){
