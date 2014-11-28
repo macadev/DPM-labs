@@ -1,4 +1,4 @@
-
+package dpm.lejos.Lab5Code;
 
 /**
  * Four possible cardinal points

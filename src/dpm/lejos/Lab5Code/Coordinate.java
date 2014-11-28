@@ -1,3 +1,5 @@
+package dpm.lejos.Lab5Code;
+
 /**
  * Coordinate class abstracts the x,y coordinate pair
  */

@@ -29,7 +29,14 @@ public class TwoWheeledRobot {
 	public TwoWheeledRobot(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double width) {
 		this(leftMotor, rightMotor, width, DEFAULT_LEFT_RADIUS, DEFAULT_RIGHT_RADIUS);
 	}
-	
+
+    public double getWheelRadius(){
+        return this.leftRadius;
+    }
+
+    public double getWidth () {
+        return width;
+    }
 	// accessors
 	public double getDisplacement() {
 		return (leftMotor.getTachoCount() * leftRadius +

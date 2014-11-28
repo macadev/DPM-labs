@@ -1,3 +1,5 @@
+package dpm.lejos.test;
+
 import dpm.lejos.Lab3Code.Vector;
 import junit.framework.TestCase;
 

@@ -1,3 +1,5 @@
+package dpm.lejos.test;
+
 import lejos.nxt.I2CPort;
 import lejos.nxt.UltrasonicSensor;
 

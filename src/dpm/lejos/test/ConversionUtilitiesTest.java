@@ -1,3 +1,5 @@
+package dpm.lejos.test;
+
 import dpm.lejos.Lab3Code.ConversionUtilities;
 import junit.framework.TestCase;
 

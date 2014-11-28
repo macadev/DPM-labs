@@ -1,3 +1,5 @@
+package dpm.lejos.Lab5Code;
+
 import lejos.nxt.LCD;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.Sound;

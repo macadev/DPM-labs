@@ -1,3 +1,5 @@
+package dpm.lejos.test;
+
 import dpm.lejos.Lab2Code.Odometer;
 
 /**

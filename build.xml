@@ -24,7 +24,13 @@
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-	
+
+    <path id="junit">
+        <fileset dir="./">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
 	<condition property="d32Flag" value="-d32" else="-Dblank.dummy.arg=">
 		<and>
 			<os family="mac" />
@@ -53,6 +59,7 @@
 			verbose="false"
 		>
 			<bootclasspath refid="lejos.nxt" />
+            <bootclasspath refid="junit" />
 			<!-- enable warnings -->
 			<compilerarg value="-Xlint:${source.warn}" />
 			<!--
@@ -198,6 +205,7 @@
             private="false"
 		>
 			<bootclasspath refid="lejos.nxt" />
+            <bootclasspath refid="junit" />
 			<!--
 				Without this, there are some JDK jars in the classpath.
 				Set verbose=true to check that the classpath is really clean.
@@ -235,4 +243,22 @@
 			<exclude name=".classpath" />
 		</zip>
 	</target>
+
+    <target name="runTests" depends="compile" description="Run JUnit tests">
+        <junit printsummary="yes" dir="${build.dir}" fork="true">
+            <classpath>
+                <pathelement location="junit-4.10.jar" />
+                <pathelement location="build/classes" />
+
+            </classpath>
+            <classpath refid="lejos.nxt" />
+            <formatter type="xml"  usefile="true"/>
+
+            <test name="dpm.lejos.test.ConversionUtilitiesTest" haltonfailure="no" outfile="Utils"/>
+            <test name="dpm.lejos.test.VectorTest" haltonfailure="no" outfile="Vector"/>
+            <test name="dpm.lejos.test.NavigationTest" haltonfailure="no" outfile="Navigation"/>
+
+        </junit>
+    </target>
+
 </project>

@@ -1,4 +1,4 @@
-/**
+package dpm.lejos.Lab5Code; /**
  * Main executable for lab 5
  * @author Daniel Macario
  * @author David Lavoie-Boutin
